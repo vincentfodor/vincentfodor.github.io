@@ -59,7 +59,7 @@ export const ShoppingList = ({
       var utterance = new SpeechSynthesisUtterance(motivation);
 
       utterance.voice = voice;
-      utterance.pitch = 1.5;
+      utterance.pitch = 0.7;
       utterance.rate = 1.25;
       utterance.volume = 0.8;
 
