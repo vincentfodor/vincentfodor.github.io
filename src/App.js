@@ -26,6 +26,10 @@ function App() {
 
   const renderTitle = username?.endsWith("s") ? `📔 ${username}' Liste` : `📔 ${username}s Liste`
 
+  if(!username) {
+    return null;
+  }
+
   return (
     <div className=''>
       <Header title={renderTitle} />
