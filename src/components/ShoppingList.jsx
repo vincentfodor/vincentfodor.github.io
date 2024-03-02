@@ -108,7 +108,10 @@ export const ShoppingList = ({
     if (savedItem) {
       // Item already exists in saved items
 
-      const quantity = prompt("so, wie viele wilsch haben?", savedItem.stack);
+      const quantity = prompt(
+        `so, wie viele ${savedItem.unit} wilsch haben?`,
+        savedItem.stack
+      );
 
       let newItems;
 
