@@ -53,7 +53,7 @@ export const ShoppingList = ({
       var synthesis = window.speechSynthesis;
 
       var voice = synthesis.getVoices().filter(function (voice) {
-        return voice.lang === "de" || voice.lang === "en";
+        return voice.lang === "de-DE";
       })[0];
 
       var utterance = new SpeechSynthesisUtterance(motivation);
