@@ -48,7 +48,7 @@ export const ShoppingList = ({
       if (v.id === item.id) {
         return {
           ...v,
-          action: "deleted",
+          action: item.action === "deleted" ? null : "deleted",
         };
       }
 
@@ -243,7 +243,10 @@ export const ShoppingList = ({
     .sort(sortSavedItems);
 
   const renderItems = (items || []).sort(sortItems).map((item) => (
-    <div className="flex flex-row items-center">
+    <div
+      className="flex flex-row items-center active:scale-105 transition border-b border-gray-200"
+      onClick={() => handleItemCheck(item)}
+    >
       <div
         className={classNames("flex grow flex-col py-2 font-semibold mr-2", {
           "line-through": item.action === "deleted",
@@ -256,16 +259,6 @@ export const ShoppingList = ({
           "line-through": item.action === "deleted",
         })}
       >{`${item.quantity} ${item.unit}`}</div>
-      <div>
-        <Button
-          className={
-            "bg-green-500 w-10 h-10 p-0 rounded-full active:scale-110 transition shrink-0"
-          }
-          onClick={() => handleItemCheck(item)}
-        >
-          ✓
-        </Button>
-      </div>
     </div>
   ));
 
@@ -297,7 +290,7 @@ export const ShoppingList = ({
         </Marquee>
       )}
       {items.length > 0 && (
-        <div className="grid grid-cols-1 gap-4 mb-4">{renderItems}</div>
+        <div className="grid grid-cols-1 mb-4">{renderItems}</div>
       )}
       <form
         onSubmit={(e) => handleItemAdd(itemName, e)}
