@@ -182,7 +182,7 @@ export const ShoppingList = ({
       <div>
         <Button
           onClick={() => handleItemAdd(item.name)}
-          className="bg-gray-300 text-black w-9 h-9 p-0 rounded-full active:scale-110 transition"
+          className="bg-gray-300 !text-black w-9 h-9 p-0 rounded-full active:scale-110 transition"
         >
           +
         </Button>
