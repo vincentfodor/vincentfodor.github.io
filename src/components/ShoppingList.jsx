@@ -44,30 +44,6 @@ export const ShoppingList = ({
   }, []);
 
   const handleItemCheck = (item) => {
-    let motivation =
-      motivationalQuotes[Math.floor(Math.random() * motivationalQuotes.length)];
-
-    setMotivation(motivation);
-
-    if ("speechSynthesis" in window) {
-      var synthesis = window.speechSynthesis;
-
-      var voice = synthesis.getVoices().filter(function (voice) {
-        return voice.lang === "de-DE";
-      })[0];
-
-      var utterance = new SpeechSynthesisUtterance(motivation);
-
-      utterance.voice = voice;
-      utterance.pitch = 0.7;
-      utterance.rate = 1.25;
-      utterance.volume = 0.8;
-
-      synthesis.speak(utterance);
-    } else {
-      console.log("Text-to-speech not supported.");
-    }
-
     const newItems = items.map((v) => {
       if (v.id === item.id) {
         return {
@@ -78,6 +54,34 @@ export const ShoppingList = ({
 
       return v;
     });
+
+    if (!newItems.find((v) => v.action !== "deleted")) {
+      let motivation =
+        motivationalQuotes[
+          Math.floor(Math.random() * motivationalQuotes.length)
+        ];
+
+      setMotivation(motivation);
+
+      if ("speechSynthesis" in window) {
+        var synthesis = window.speechSynthesis;
+
+        var voice = synthesis.getVoices().filter(function (voice) {
+          return voice.lang === "de-DE";
+        })[0];
+
+        var utterance = new SpeechSynthesisUtterance(motivation);
+
+        utterance.voice = voice;
+        utterance.pitch = 0.7;
+        utterance.rate = 1.25;
+        utterance.volume = 0.8;
+
+        synthesis.speak(utterance);
+      } else {
+        console.log("Text-to-speech not supported.");
+      }
+    }
 
     setItems(newItems);
     save(itemStorageName, newItems);
@@ -129,6 +133,7 @@ export const ShoppingList = ({
           ...items,
           {
             id: newId,
+            savedId: savedItem.id,
             name,
             stack: savedItem.stack,
             unit: savedItem.unit,
@@ -137,9 +142,22 @@ export const ShoppingList = ({
         ];
       }
 
+      let newSavedItems = savedItems.map((v) => {
+        if (v.id === savedItem.id) {
+          return {
+            ...v,
+            timesAdded: savedItem.timesAdded + 1,
+          };
+        }
+
+        return v;
+      });
+
+      setSavedItems(newSavedItems);
       setItems(newItems);
 
       save(itemStorageName, newItems);
+      save(storageName, newSavedItems);
     } else {
       // New Item
 
@@ -176,6 +194,7 @@ export const ShoppingList = ({
           name,
           stack,
           unit,
+          timesAdded: 1,
         },
       ];
 
@@ -223,7 +242,7 @@ export const ShoppingList = ({
     .filter((item) => item.name.toLowerCase().includes(itemName.toLowerCase()))
     .sort(sortSavedItems);
 
-  const renderItems = (items || []).map((item) => (
+  const renderItems = (items || []).sort(sortItems).map((item) => (
     <div className="flex flex-row items-center">
       <div
         className={classNames("flex grow flex-col py-2 font-semibold mr-2", {
@@ -240,7 +259,7 @@ export const ShoppingList = ({
       <div>
         <Button
           className={
-            "bg-green-500 w-9 h-9 p-0 rounded-full active:scale-110 transition shrink-0"
+            "bg-green-500 w-10 h-10 p-0 rounded-full active:scale-110 transition shrink-0"
           }
           onClick={() => handleItemCheck(item)}
         >
@@ -256,13 +275,13 @@ export const ShoppingList = ({
       <div>
         <Button
           onClick={() => handleDeleteSavedItem(item)}
-          className="bg-transparent !text-black w-9 h-9 p-0 rounded-full active:scale-110 transition mr-2"
+          className="bg-transparent !text-black w-10 h-10 p-0 rounded-full active:scale-110 transition mr-2"
         >
           🗑
         </Button>
         <Button
           onClick={() => handleItemAdd(item.name)}
-          className="bg-gray-300 !text-black w-9 h-9 p-0 rounded-full active:scale-110 transition"
+          className="bg-gray-200 !text-black w-10 h-10 p-0 rounded-full active:scale-110 transition"
         >
           +
         </Button>
@@ -277,7 +296,9 @@ export const ShoppingList = ({
           {motivation}
         </Marquee>
       )}
-      <div className="grid grid-cols-1 gap-4 mb-4">{renderItems}</div>
+      {items.length > 0 && (
+        <div className="grid grid-cols-1 gap-4 mb-4">{renderItems}</div>
+      )}
       <form
         onSubmit={(e) => handleItemAdd(itemName, e)}
         className="flex items-center mb-4"
@@ -291,7 +312,7 @@ export const ShoppingList = ({
         />
         <Button
           type="submit"
-          className="bg-gray-300 !text-black w-9 h-9 p-0 rounded-full active:scale-110 transition"
+          className="bg-gray-200 !text-black w-10 h-10 p-0 rounded-full active:scale-110 transition"
         >
           +
         </Button>
@@ -301,12 +322,22 @@ export const ShoppingList = ({
   );
 };
 
-const sortSavedItems = (a, b) => {
-  if (a.name < b.name) {
+const sortItems = (a, b) => {
+  if (a.action === "deleted") {
+    return 1;
+  }
+  if (b.action === "deleted") {
     return -1;
   }
-  if (a.name > b.name) {
+  return 0;
+};
+
+const sortSavedItems = (a, b) => {
+  if (a.timesAdded < b.timesAdded) {
     return 1;
+  }
+  if (a.timesAdded > b.timesAdded) {
+    return -1;
   }
   return 0;
 };
