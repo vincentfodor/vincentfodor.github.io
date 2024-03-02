@@ -5,7 +5,7 @@ export const Textbox = ({ className, ...props }) => {
     <div
       className={classNames(
         className,
-        "bg-gray-300 rounded-md overflow-hidden"
+        "bg-gray-200 rounded-md overflow-hidden"
       )}
     >
       <input
