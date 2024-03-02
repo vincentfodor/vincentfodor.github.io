@@ -245,7 +245,7 @@ export const ShoppingList = ({
     .filter((item) => item.name.toLowerCase().includes(itemName.toLowerCase()))
     .sort(sortSavedItems);
 
-  const renderItems = (items || []).sort(sortItems).map((item) => (
+  const renderItems = (items || []).map((item) => (
     <div
       className="flex flex-row items-center active:scale-105 transition border-b border-gray-200"
       onClick={() => handleItemCheck(item)}
@@ -288,7 +288,7 @@ export const ShoppingList = ({
   return (
     <div className={classNames(className, "p-4")}>
       {motivation && (
-        <Marquee className="text-sm mb-2" speed={20}>
+        <Marquee className="text-sm mb-2 mr-2" speed={20}>
           {motivation}
         </Marquee>
       )}
@@ -318,15 +318,15 @@ export const ShoppingList = ({
   );
 };
 
-const sortItems = (a, b) => {
-  if (a.action === "deleted") {
-    return 1;
-  }
-  if (b.action === "deleted") {
-    return -1;
-  }
-  return 0;
-};
+// const sortItems = (a, b) => {
+//   if (a.action === "deleted") {
+//     return 1;
+//   }
+//   if (b.action === "deleted") {
+//     return -1;
+//   }
+//   return 0;
+// };
 
 const sortSavedItems = (a, b) => {
   if (a.timesAdded < b.timesAdded) {
