@@ -5,7 +5,11 @@ import { Textbox } from "./Textbox";
 import { motivationalQuotes } from "../data/motivationalQuotes";
 import Marquee from "react-fast-marquee";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPenAlt, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
+import {
+    faPenAlt,
+    faPlus,
+    faTrashAlt,
+} from "@fortawesome/free-solid-svg-icons";
 import { Select } from "./Select";
 
 export const ShoppingList = ({
@@ -104,7 +108,7 @@ export const ShoppingList = ({
 
                 synthesis.speak(utterance);
             } else {
-                console.log("Text-to-speech not supported.");
+                console.error("Text-to-speech not supported.");
             }
         }
 
@@ -140,8 +144,6 @@ export const ShoppingList = ({
                     v.name.toLowerCase() === name.toLowerCase() &&
                     v.action !== "deleted"
             );
-
-            console.log(savedItem.stack);
 
             if (existingItem) {
                 newItems = items.map((v) => {
@@ -320,7 +322,8 @@ export const ShoppingList = ({
 
     const renderItems = (items || []).map((item) => (
         <div
-            className="flex flex-row items-center active:scale-105 transition border-b border-gray-200"
+            key={`item-${item.id}`}
+            className="flex flex-row items-center active:scale-105 transition border-b border-gray-200 pl-2"
             onClick={() => handleItemCheck(item)}
         >
             <div
@@ -351,7 +354,7 @@ export const ShoppingList = ({
     const renderSavedItems = (filteredSavedItems || []).map((item) => (
         <div
             key={`saved-item-${item.id}`}
-            className="flex flex-row items-center active:scale-105 transition border-b"
+            className="flex flex-row items-center active:scale-105 transition border-b pl-2"
             onClick={() => handleItemAdd(item.name)}
         >
             <div className="grow">
@@ -411,7 +414,7 @@ export const ShoppingList = ({
             >
                 <Textbox
                     type="text"
-                    className="grow mr-4"
+                    className="grow mr-2"
                     value={itemName}
                     onChange={(e) => setItemName(e.target.value)}
                     placeholder="Suchen oder hinzufügen..."
@@ -420,7 +423,7 @@ export const ShoppingList = ({
                     type="submit"
                     className="bg-gray-200 !text-black w-10 h-10 p-0 rounded-full active:scale-110 transition inline-flex items-center justify-center"
                 >
-                    +
+                    <FontAwesomeIcon icon={faPlus} size="sm" />
                 </Button>
             </form>
             <div className="text-right mb-4">
@@ -437,7 +440,7 @@ export const ShoppingList = ({
                     <option value="name-desc">Bezeichnung</option>
                 </Select>
             </div>
-            <div className="grid grid-cols-1 gap-4 mb-4">
+            <div className="grid grid-cols-1 gap-2 mb-4">
                 {renderSavedItems}
             </div>
         </div>
