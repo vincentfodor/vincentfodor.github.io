@@ -55,8 +55,8 @@ function App() {
     };
 
     const renderTitle = username?.endsWith("s")
-        ? `📔 ${username}' Liste`
-        : `📔 ${username}s Liste`;
+        ? `📔 ${username}' Zettel`
+        : `📔 ${username}s Zettel`;
 
     if (!username) {
         return null;
