@@ -92,7 +92,6 @@ export const UpdateItemDialog = ({
                             optional
                         />
                         <Textbox
-                            autoFocus
                             type="text"
                             placeholder="Neue Kategorie"
                             value={category}
