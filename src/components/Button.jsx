@@ -6,7 +6,7 @@ export const Button = ({ children, className, icon, ...props }) => {
         <button
             className={classNames(
                 className,
-                "bg-black text-white border-0 p-2 inline-flex items-center"
+                "bg-black text-white border-0 p-2 inline-flex items-center rounded-md"
             )}
             {...props}
         >

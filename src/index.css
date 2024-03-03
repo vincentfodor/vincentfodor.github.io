@@ -20,3 +20,7 @@ code {
 .rfm-initial-child-container {
     margin-right: 4px;
 }
+
+a {
+    text-decoration: underline;
+}

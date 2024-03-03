@@ -4,6 +4,8 @@ import { Header } from "./components/Header";
 import { ShoppingList } from "./components/ShoppingList";
 import { Button } from "./components/Button";
 import { faDownload } from "@fortawesome/free-solid-svg-icons";
+import { Link, Route, Router, Routes } from "react-router-dom";
+import { ImprintPage } from "./pages/ImprintPage";
 
 function App() {
     const [username, setUsername] = useState(localStorage.getItem("username"));
@@ -83,7 +85,22 @@ function App() {
     return (
         <div className="max-w-screen-md mx-auto lg:pt-16">
             <Header title={renderTitle} rightText={renderRightText()} />
-            <ShoppingList storageName="main" itemStorageName="main-items" />
+            <Routes>
+                <Route
+                    exact
+                    path="/"
+                    element={
+                        <ShoppingList
+                            storageName="main"
+                            itemStorageName="main-items"
+                        />
+                    }
+                />
+                <Route exact path="/impressum" element={<ImprintPage />} />
+            </Routes>
+            <div className="text-center my-4">
+                <Link to="/impressum">Impressum</Link>
+            </div>
         </div>
     );
 }

@@ -314,11 +314,9 @@ export const ShoppingList = ({
         localStorage.setItem(name, JSON.stringify(data));
     };
 
-    const filteredSavedItems = (savedItems || [])
-        .filter((item) =>
-            item.name.toLowerCase().includes(itemName.toLowerCase())
-        )
-        .sort((a, b) => sortSavedItems(a, b, sort));
+    const filteredSavedItems = (savedItems || []).filter((item) =>
+        item.name.toLowerCase().includes(itemName.toLowerCase())
+    );
 
     const renderItems = (items || []).map((item) => (
         <div
@@ -351,39 +349,41 @@ export const ShoppingList = ({
         </div>
     ));
 
-    const renderSavedItems = (filteredSavedItems || []).map((item) => (
-        <div
-            key={`saved-item-${item.id}`}
-            className="flex flex-row items-center active:scale-105 transition border-b"
-            onClick={() => handleItemAdd(item.name)}
-        >
-            <div className="grow">
-                <Button
-                    onClick={(e) => handleDeleteSavedItem(item, e)}
-                    className="bg-transparent !text-black w-8 h-8 rounded-full active:scale-110 transition"
-                >
-                    <FontAwesomeIcon
-                        icon={faTrashAlt}
-                        size="sm"
-                        className="text-red-500"
-                    />
-                </Button>
-                <Button
-                    onClick={(e) => handleEditSavedItem(item, e)}
-                    className="bg-transparent !text-black w-10 h-10 rounded-full active:scale-110 transition"
-                >
-                    <FontAwesomeIcon
-                        icon={faPenAlt}
-                        size="sm"
-                        className="text-slate-600"
-                    />
-                </Button>
+    const renderSavedItems = (filteredSavedItems || [])
+        .sort((a, b) => sortSavedItems(a, b, sort))
+        .map((item) => (
+            <div
+                key={`saved-item-${item.id}`}
+                className="flex flex-row items-center active:scale-105 transition border-b"
+                onClick={() => handleItemAdd(item.name)}
+            >
+                <div className="grow">
+                    <Button
+                        onClick={(e) => handleDeleteSavedItem(item, e)}
+                        className="bg-transparent !text-black w-8 h-8 rounded-full active:scale-110 transition"
+                    >
+                        <FontAwesomeIcon
+                            icon={faTrashAlt}
+                            size="sm"
+                            className="text-red-500"
+                        />
+                    </Button>
+                    <Button
+                        onClick={(e) => handleEditSavedItem(item, e)}
+                        className="bg-transparent !text-black w-10 h-10 rounded-full active:scale-110 transition"
+                    >
+                        <FontAwesomeIcon
+                            icon={faPenAlt}
+                            size="sm"
+                            className="text-slate-600"
+                        />
+                    </Button>
+                </div>
+                <div className="flex flex-col py-2 font-semibold pr-4">
+                    {item.name}
+                </div>
             </div>
-            <div className="flex flex-col py-2 font-semibold pr-4">
-                {item.name}
-            </div>
-        </div>
-    ));
+        ));
 
     const total = (items?.filter((v) => v.action === "deleted") || []).reduce(
         (prev, current) =>
@@ -440,9 +440,7 @@ export const ShoppingList = ({
                     <option value="name-desc">Bezeichnung</option>
                 </Select>
             </div>
-            <div className="grid grid-cols-1 gap-2 mb-4">
-                {renderSavedItems}
-            </div>
+            <div className="grid grid-cols-1 gap-2">{renderSavedItems}</div>
         </div>
     );
 };
@@ -459,6 +457,17 @@ export const ShoppingList = ({
 
 const sortSavedItems = (a, b, sort) => {
     let [field, direction] = sort.split("-");
+
+    let fieldA = a[field];
+    let fieldB = b[field];
+
+    if (typeof fieldA === "string") {
+        fieldA = fieldA.toLowerCase();
+    }
+
+    if (typeof fieldB === "string") {
+        fieldB = fieldB.toLowerCase();
+    }
 
     if (a[field] < b[field]) {
         return direction === "asc" ? 1 : -1;
