@@ -354,13 +354,13 @@ export const ShoppingList = ({
     const renderSavedItems = (filteredSavedItems || []).map((item) => (
         <div
             key={`saved-item-${item.id}`}
-            className="flex flex-row items-center active:scale-105 transition border-b pl-2"
+            className="flex flex-row items-center active:scale-105 transition border-b"
             onClick={() => handleItemAdd(item.name)}
         >
             <div className="grow">
                 <Button
                     onClick={(e) => handleDeleteSavedItem(item, e)}
-                    className="bg-transparent !text-black w-8 h-8 !p-0 rounded-full active:scale-110 transition"
+                    className="bg-transparent !text-black w-8 h-8 rounded-full active:scale-110 transition"
                 >
                     <FontAwesomeIcon
                         icon={faTrashAlt}
@@ -370,7 +370,7 @@ export const ShoppingList = ({
                 </Button>
                 <Button
                     onClick={(e) => handleEditSavedItem(item, e)}
-                    className="bg-transparent !text-black w-8 h-8 !p-0 rounded-full active:scale-110 transition"
+                    className="bg-transparent !text-black w-10 h-10 rounded-full active:scale-110 transition"
                 >
                     <FontAwesomeIcon
                         icon={faPenAlt}
@@ -471,6 +471,11 @@ const sortSavedItems = (a, b, sort) => {
 
 export const promptInt = (question, defaultValue) => {
     let result = prompt(question, defaultValue);
+
+    if (result === null) {
+        // Cancelled
+        return null;
+    }
 
     if (!result) {
         return promptInt(
