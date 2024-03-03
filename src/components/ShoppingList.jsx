@@ -418,7 +418,7 @@ export const ShoppingList = ({
                 />
                 <Button
                     type="submit"
-                    className="bg-gray-200 !text-black w-10 h-10 p-0 rounded-full active:scale-110 transition"
+                    className="bg-gray-200 !text-black w-10 h-10 p-0 rounded-full active:scale-110 transition inline-flex items-center justify-center"
                 >
                     +
                 </Button>
