@@ -81,7 +81,7 @@ function App() {
     };
 
     return (
-        <div className="">
+        <div className="max-w-screen-md mx-auto lg:pt-16">
             <Header title={renderTitle} rightText={renderRightText()} />
             <ShoppingList storageName="main" itemStorageName="main-items" />
         </div>
