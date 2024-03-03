@@ -113,6 +113,10 @@ export const ShoppingList = ({
         savedItem.stack
       );
 
+      if (!quantity || quantity === "0") {
+        return;
+      }
+
       let newItems;
 
       const existingItem = items.find(
