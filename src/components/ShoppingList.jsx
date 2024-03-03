@@ -11,11 +11,14 @@ import {
     faTrashAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import { Select } from "./Select";
+import { AddItemDialog } from "./dialogs/AddItemDialog";
+import { UpdateItemDialog } from "./dialogs/UpdateItemDialog";
 
 export const ShoppingList = ({
     className,
     storageName,
     itemStorageName,
+    isMuted,
     ...props
 }) => {
     const [items, setItems] = useState([]);
@@ -25,6 +28,9 @@ export const ShoppingList = ({
     const [sort, setSort] = useState(
         localStorage.getItem(`${itemStorageName}-sort`) || "timesAdded-desc"
     );
+    const [isAddItemDialogOpen, setIsAddItemDialogOpen] = useState(false);
+    const [categoryFilter, setCategoryFilter] = useState(null);
+    const [currentItem, setCurrentItem] = useState(null);
 
     useEffect(() => {
         const itemList = localStorage.getItem(itemStorageName);
@@ -34,11 +40,7 @@ export const ShoppingList = ({
             try {
                 const parsedItemList = JSON.parse(itemList);
 
-                setItems(
-                    parsedItemList.filter(
-                        (v) => v.action !== "deleted" && v.price
-                    )
-                );
+                setItems(parsedItemList.filter((v) => v.action !== "deleted"));
             } catch (e) {
                 console.error(e);
                 alert("Shit");
@@ -49,7 +51,7 @@ export const ShoppingList = ({
             try {
                 const parsedSavedList = JSON.parse(savedList);
 
-                setSavedItems(parsedSavedList.filter((v) => v.price));
+                setSavedItems(parsedSavedList);
             } catch (e) {
                 console.error(e);
                 alert("Fuck");
@@ -77,38 +79,40 @@ export const ShoppingList = ({
 
             setMotivation(motivation);
 
-            if ("speechSynthesis" in window) {
-                let synthesis = window.speechSynthesis;
+            if (!isMuted) {
+                if ("speechSynthesis" in window) {
+                    let synthesis = window.speechSynthesis;
 
-                let voice = synthesis.getVoices().find(function (voice) {
-                    return voice.voiceURI === "Google Deutsch";
-                });
-
-                if (!voice) {
-                    voice = synthesis.getVoices().find(function (voice) {
-                        return (
-                            voice.voiceURI ===
-                            "Microsoft Stefan - German (Germany)"
-                        );
+                    let voice = synthesis.getVoices().find(function (voice) {
+                        return voice.voiceURI === "Google Deutsch";
                     });
+
+                    if (!voice) {
+                        voice = synthesis.getVoices().find(function (voice) {
+                            return (
+                                voice.voiceURI ===
+                                "Microsoft Stefan - German (Germany)"
+                            );
+                        });
+                    }
+
+                    if (!voice) {
+                        voice = synthesis.getVoices().find(function (voice) {
+                            return voice.lang === "de-DE";
+                        });
+                    }
+
+                    let utterance = new SpeechSynthesisUtterance(motivation);
+
+                    utterance.voice = voice;
+                    utterance.pitch = 0.3;
+                    utterance.rate = 0.7;
+                    utterance.volume = 1;
+
+                    synthesis.speak(utterance);
+                } else {
+                    console.error("Text-to-speech not supported.");
                 }
-
-                if (!voice) {
-                    voice = synthesis.getVoices().find(function (voice) {
-                        return voice.lang === "de-DE";
-                    });
-                }
-
-                let utterance = new SpeechSynthesisUtterance(motivation);
-
-                utterance.voice = voice;
-                utterance.pitch = 0.3;
-                utterance.rate = 0.7;
-                utterance.volume = 1;
-
-                synthesis.speak(utterance);
-            } else {
-                console.error("Text-to-speech not supported.");
             }
         }
 
@@ -116,16 +120,18 @@ export const ShoppingList = ({
         save(itemStorageName, newItems);
     };
 
+    console.log({ savedItems });
+
     const handleItemAdd = (name, e) => {
         if (e) {
             e.preventDefault();
         }
 
         if (!name) {
+            setIsAddItemDialogOpen(true);
+
             return;
         }
-
-        setItemName("");
 
         const newId =
             items.length > 0 ? Math.max(...items.map((o) => o.id)) + 1 : 0;
@@ -191,63 +197,7 @@ export const ShoppingList = ({
         } else {
             // New Item
 
-            const unit = prompt(
-                "des kenn i ja no gar ned heide bimbam. was für ne messung isch des?",
-                "Stück"
-            );
-
-            if (!unit) {
-                return;
-            }
-
-            const stack = promptInt("wie viele sins denn im päckle?", 1);
-
-            if (!stack) {
-                return;
-            }
-
-            const price = promptInt("und was koscht der spaß?", 1);
-
-            if (!price) {
-                return;
-            }
-
-            const newSavedId =
-                savedItems.length > 0
-                    ? Math.max(...savedItems.map((o) => o.id)) + 1
-                    : 0;
-
-            const newSavedItems = [
-                ...savedItems,
-                {
-                    id: newSavedId,
-                    name,
-                    stack,
-                    unit,
-                    timesAdded: 1,
-                    price,
-                },
-            ];
-
-            setSavedItems(newSavedItems);
-
-            save(storageName, newSavedItems);
-
-            const newItems = [
-                ...items,
-                {
-                    id: newId,
-                    name,
-                    stack,
-                    unit,
-                    quantity: stack,
-                    price,
-                },
-            ];
-
-            setItems(newItems);
-
-            save(itemStorageName, newItems);
+            setIsAddItemDialogOpen(true);
         }
     };
 
@@ -270,37 +220,10 @@ export const ShoppingList = ({
         save(storageName, newSavedItems);
     };
 
-    const handleEditSavedItem = (item, e) => {
-        if (e) {
-            e.stopPropagation();
-        }
-
-        const unit = prompt("was für ne messung isch des?", item.unit);
-
-        if (!unit) {
-            return;
-        }
-
-        const stack = promptInt("wie viele sins denn im päckle?", item.stack);
-
-        if (!stack) {
-            return;
-        }
-
-        const price = promptInt("und was koscht der spaß?", item.price);
-
-        if (!price) {
-            return;
-        }
-
+    const handleEditSavedItem = (item) => {
         let newSavedItems = savedItems.map((v) => {
             if (v.id === item.id) {
-                return {
-                    ...v,
-                    unit,
-                    stack,
-                    price,
-                };
+                return item;
             }
 
             return v;
@@ -310,18 +233,70 @@ export const ShoppingList = ({
         save(storageName, newSavedItems);
     };
 
+    const handleItemCreate = (newItem) => {
+        const newSavedId =
+            savedItems.length > 0
+                ? Math.max(...savedItems.map((o) => o.id)) + 1
+                : 0;
+
+        const newId =
+            items.length > 0 ? Math.max(...items.map((o) => o.id)) + 1 : 0;
+
+        const newSavedItems = [
+            ...savedItems,
+            {
+                id: newSavedId,
+                name: newItem.name,
+                stack: newItem.stack,
+                unit: newItem.unit,
+                timesAdded: 1,
+                price: newItem.price,
+                category: newItem.category,
+            },
+        ];
+
+        setSavedItems(newSavedItems);
+
+        save(storageName, newSavedItems);
+
+        const newItems = [
+            ...items,
+            {
+                id: newId,
+                name: newItem.name,
+                stack: newItem.stack,
+                unit: newItem.unit,
+                quantity: newItem.stack,
+                price: newItem.price,
+                category: newItem.category,
+            },
+        ];
+
+        setItems(newItems);
+
+        save(itemStorageName, newItems);
+
+        setItemName("");
+    };
+
     const save = (name, data) => {
         localStorage.setItem(name, JSON.stringify(data));
     };
 
-    const filteredSavedItems = (savedItems || []).filter((item) =>
+    let filteredSavedItems = (savedItems || []).filter((item) =>
         item.name.toLowerCase().includes(itemName.toLowerCase())
     );
+
+    if (categoryFilter) {
+        filteredSavedItems = (filteredSavedItems || []).filter(
+            (item) => item.category === categoryFilter
+        );
+    }
 
     const renderItems = (items || []).map((item) => (
         <div
             key={`item-${item.id}`}
-            className="flex flex-row items-center active:scale-105 transition border-b border-gray-200 pl-2"
+            className="flex flex-row items-center active:scale-105 cursor-pointer transition border-b border-gray-200 pl-2"
             onClick={() => handleItemCheck(item)}
         >
             <div
@@ -339,13 +314,21 @@ export const ShoppingList = ({
                     "line-through": item.action === "deleted",
                 })}
             >{`${item.quantity} ${item.unit}`}</div>
-            <div
-                className={classNames("flex flex-col py-2 font-semibold mr-2", {
-                    "line-through": item.action === "deleted",
-                })}
-            >
-                {formatCurrency(item.price * (item.quantity / item.stack), "€")}
-            </div>
+            {Number(item.price) !== "NaN" && Number(item.price) > 0 && (
+                <div
+                    className={classNames(
+                        "flex flex-col py-2 font-semibold mr-2",
+                        {
+                            "line-through": item.action === "deleted",
+                        }
+                    )}
+                >
+                    {formatCurrency(
+                        item.price * (item.quantity / item.stack),
+                        "€"
+                    )}
+                </div>
+            )}
         </div>
     ));
 
@@ -354,7 +337,7 @@ export const ShoppingList = ({
         .map((item) => (
             <div
                 key={`saved-item-${item.id}`}
-                className="flex flex-row items-center active:scale-105 transition border-b"
+                className="flex flex-row items-center active:scale-105 cursor-pointer transition border-b"
                 onClick={() => handleItemAdd(item.name)}
             >
                 <div className="grow">
@@ -369,7 +352,11 @@ export const ShoppingList = ({
                         />
                     </Button>
                     <Button
-                        onClick={(e) => handleEditSavedItem(item, e)}
+                        onClick={(e) => {
+                            e.stopPropagation();
+
+                            setCurrentItem(item);
+                        }}
                         className="bg-transparent !text-black w-10 h-10 rounded-full active:scale-110 transition"
                     >
                         <FontAwesomeIcon
@@ -385,11 +372,21 @@ export const ShoppingList = ({
             </div>
         ));
 
-    const total = (items?.filter((v) => v.action === "deleted") || []).reduce(
+    const total = (
+        items?.filter((v) => v.action === "deleted" && v.price) || []
+    ).reduce(
         (prev, current) =>
             prev + current.price * (current.quantity / current.stack),
         0
     );
+
+    const categories = [
+        ...new Set(
+            savedItems
+                .filter((item) => item.category)
+                .map((item) => item.category)
+        ),
+    ];
 
     return (
         <div className={classNames(className, "p-4")}>
@@ -421,12 +418,12 @@ export const ShoppingList = ({
                 />
                 <Button
                     type="submit"
-                    className="bg-gray-200 !text-black w-10 h-10 p-0 rounded-full active:scale-110 transition inline-flex items-center justify-center"
+                    className="bg-gray-100 !text-black w-10 h-10 p-0 rounded-full active:scale-110 transition inline-flex items-center justify-center"
                 >
                     <FontAwesomeIcon icon={faPlus} size="sm" />
                 </Button>
             </form>
-            <div className="text-right mb-4">
+            <div className="text-right mb-1">
                 <Select
                     value={sort}
                     onChange={(e) => {
@@ -440,7 +437,44 @@ export const ShoppingList = ({
                     <option value="name-desc">Bezeichnung</option>
                 </Select>
             </div>
+            {!!categories && categories.length > 0 && (
+                <div className="grow whitespace-nowrap overflow-y-auto mb-2 pb-2">
+                    {(categories || []).map((category) => (
+                        <Button
+                            onClick={() =>
+                                categoryFilter === category
+                                    ? setCategoryFilter(null)
+                                    : setCategoryFilter(category)
+                            }
+                            className={classNames("mr-2 last:mr-0 transition", {
+                                "bg-gray-100 text-black":
+                                    categoryFilter !== category,
+                            })}
+                        >
+                            {category}
+                        </Button>
+                    ))}
+                </div>
+            )}
             <div className="grid grid-cols-1 gap-2">{renderSavedItems}</div>
+            <AddItemDialog
+                open={isAddItemDialogOpen}
+                onClose={() => setIsAddItemDialogOpen(false)}
+                itemName={itemName}
+                savedItems={savedItems}
+                onSubmit={handleItemCreate}
+                category={categoryFilter}
+            />
+            <UpdateItemDialog
+                item={currentItem}
+                onSubmit={(newItem) => {
+                    console.log(newItem);
+                    handleEditSavedItem(newItem);
+                }}
+                open={currentItem}
+                onClose={() => setCurrentItem(null)}
+                savedItems={savedItems}
+            />
         </div>
     );
 };

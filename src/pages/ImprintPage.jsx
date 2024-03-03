@@ -18,12 +18,6 @@ export const ImprintPage = () => {
                 <br />
                 70195 Stuttgart <br />
             </p>
-            <p className="mb-4">
-                <strong>Vertreten durch: </strong>
-                <br />
-                Vincent Fodor
-                <br />
-            </p>
             <p className="mb-8">
                 <strong>Kontakt:</strong> <br />
                 Telefon: +49-1522 6269690

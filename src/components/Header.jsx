@@ -5,7 +5,7 @@ export const Header = ({ className, title, rightText, ...props }) => {
         <div
             className={classNames(
                 className,
-                "w-full flex p-4 border-b border-gray-300 items-center"
+                "fixed md:relative w-full flex p-4 border-b border-gray-300 items-center z-10 bg-white"
             )}
         >
             <div className="grow">
