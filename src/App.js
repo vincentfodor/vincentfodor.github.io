@@ -111,7 +111,16 @@ function App() {
             );
         }
 
-        return null;
+        return (
+            <FontAwesomeIcon
+                icon={isMuted ? faVolumeTimes : faVolumeHigh}
+                onClick={() => {
+                    setIsMuted(!isMuted);
+
+                    localStorage.setItem("muted", !isMuted);
+                }}
+            />
+        );
     };
 
     return (
