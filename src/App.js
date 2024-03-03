@@ -7,7 +7,7 @@ import { faDownload } from "@fortawesome/free-solid-svg-icons";
 
 function App() {
     const [username, setUsername] = useState(localStorage.getItem("username"));
-    const [isPWAInstalled, setIsPWAInstalled] = useState(false);
+    const [isPWAUsed, setIsPWAUsed] = useState(false);
     const [deferredPrompt, setDeferredPrompt] = useState(null);
 
     useEffect(() => {
@@ -30,7 +30,7 @@ function App() {
 
     useEffect(() => {
         if (window.matchMedia("(display-mode: standalone)").matches) {
-            setIsPWAInstalled(true);
+            setIsPWAUsed(true);
         }
 
         window.addEventListener("beforeinstallprompt", (e) => {
@@ -50,7 +50,7 @@ function App() {
         const { outcome } = await deferredPrompt.userChoice;
 
         if (outcome) {
-            setIsPWAInstalled(true);
+            setIsPWAUsed(true);
         }
     };
 
@@ -62,19 +62,27 @@ function App() {
         return null;
     }
 
+    const renderRightText = () => {
+        if (!isPWAUsed && deferredPrompt) {
+            return (
+                <Button icon={faDownload} onClick={handleInstall}>
+                    App installieren
+                </Button>
+            );
+        } else if (!isPWAUsed && !deferredPrompt) {
+            return (
+                <span className="text-xs w-40 block">
+                    Du benötigst Google Chrome, um die App zu installieren
+                </span>
+            );
+        }
+
+        return null;
+    };
+
     return (
         <div className="">
-            <Header
-                title={renderTitle}
-                rightText={
-                    !isPWAInstalled &&
-                    deferredPrompt && (
-                        <Button icon={faDownload} onClick={handleInstall}>
-                            App installieren
-                        </Button>
-                    )
-                }
-            />
+            <Header title={renderTitle} rightText={renderRightText()} />
             <ShoppingList storageName="main" itemStorageName="main-items" />
         </div>
     );
