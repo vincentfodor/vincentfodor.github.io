@@ -447,7 +447,7 @@ export const ShoppingList = ({
                                     : setCategoryFilter(category)
                             }
                             className={classNames("mr-2 last:mr-0 transition", {
-                                "bg-gray-100 text-black":
+                                "bg-gray-100 !text-black":
                                     categoryFilter !== category,
                             })}
                         >
