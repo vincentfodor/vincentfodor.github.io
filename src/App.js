@@ -77,7 +77,7 @@ function App() {
             return (
                 <div className="flex items-center">
                     <Button
-                        className="mr-4"
+                        className="mr-4 whitespace-nowrap"
                         icon={faDownload}
                         onClick={handleInstall}
                     >

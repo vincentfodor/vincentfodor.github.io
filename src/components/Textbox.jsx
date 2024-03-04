@@ -1,6 +1,6 @@
 import classNames from "classnames";
 
-export const Textbox = ({ className, label, optional, ...props }) => {
+export const Textbox = ({ className, label, optional, error, ...props }) => {
     return (
         <div className={className}>
             {!!label && (
@@ -13,12 +13,24 @@ export const Textbox = ({ className, label, optional, ...props }) => {
                     )}
                 </label>
             )}
-            <div className={"bg-gray-100 rounded-md overflow-hidden"}>
+            <div
+                className={classNames(
+                    "bg-gray-100 rounded-md overflow-hidden",
+                    {
+                        "border border-red-500": !!error,
+                    }
+                )}
+            >
                 <input
                     className="w-full border-0 bg-transparent p-2 outline-none"
                     {...props}
                 />
             </div>
+            {!!error && (
+                <span className="text-base text-red-500 block mt-1">
+                    {error}
+                </span>
+            )}
         </div>
     );
 };

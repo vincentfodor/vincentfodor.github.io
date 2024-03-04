@@ -14,7 +14,7 @@ export const AddItemDialog = ({
     ...props
 }) => {
     const [itemName, setItemName] = useState(itemNameProp);
-    const [unit, setUnit] = useState(categoryProp || "Stück");
+    const [unit, setUnit] = useState(categoryProp || "Packung");
     const [stack, setStack] = useState(1);
     const [category, setCategory] = useState("");
     const [price, setPrice] = useState("");
@@ -30,6 +30,10 @@ export const AddItemDialog = ({
     const handleSubmit = (e) => {
         e.preventDefault();
 
+        if (!validate()) {
+            return;
+        }
+
         if (onSubmit) {
             onSubmit({
                 name: itemName,
@@ -40,9 +44,7 @@ export const AddItemDialog = ({
             });
         }
 
-        if (onClose) {
-            onClose();
-        }
+        handleClose();
     };
 
     const handleClose = () => {
@@ -58,7 +60,20 @@ export const AddItemDialog = ({
         setCategory(categoryProp);
         setPrice("");
         setStack(1);
-        setUnit("Stück");
+        setUnit("Packung");
+    };
+
+    const validate = () => {
+        if (
+            !itemName ||
+            savedItems.find(
+                (v) => v.name.toLowerCase() === itemName.toLowerCase()
+            )
+        ) {
+            return false;
+        }
+
+        return true;
     };
 
     return (
@@ -68,22 +83,36 @@ export const AddItemDialog = ({
                     <Textbox
                         autoFocus={!itemNameProp}
                         type="text"
-                        label="was isch des?"
+                        label="Bezeichnung"
                         value={itemName}
                         onChange={(e) => setItemName(e.target.value)}
+                        maxLength={24}
+                        error={
+                            savedItems.find(
+                                (v) =>
+                                    v.name.toLowerCase() ===
+                                    itemName.toLowerCase()
+                            ) &&
+                            "Ein Produkt mit dieser Bezeichnung exisitiert bereits."
+                        }
                     />
-                    <Textbox
-                        type="number"
-                        value={stack}
-                        onChange={(e) => setStack(e.target.value)}
-                        label="wie viele sind im päckle?"
-                    />
-                    <UnitSelect
-                        value={unit}
-                        onChange={(e) => setUnit(e.target.value)}
-                        label="Mengeneinheit"
-                        className="w-full"
-                    />
+                    <div>
+                        <label className="block mb-1">Verpackungseinheit</label>
+                        <div className="grid grid-cols-2 gap-2">
+                            <Textbox
+                                type="number"
+                                value={stack}
+                                onChange={(e) => setStack(e.target.value)}
+                                max={99999}
+                                placeholder="Menge"
+                            />
+                            <UnitSelect
+                                value={unit}
+                                onChange={(e) => setUnit(e.target.value)}
+                                className="w-full"
+                            />
+                        </div>
+                    </div>
                     <div>
                         <CategorySelect
                             label="Kategorie"
@@ -98,6 +127,7 @@ export const AddItemDialog = ({
                             placeholder="Neue Kategorie"
                             value={category}
                             onChange={(e) => setCategory(e.target.value)}
+                            maxLength={24}
                         />
                     </div>
                     <Textbox
@@ -106,13 +136,19 @@ export const AddItemDialog = ({
                         label="Preis"
                         step=".01"
                         optional
+                        min={0}
+                        max="99999"
                     />
                 </div>
                 <div className="text-right">
                     <Button
                         disabled={
                             !itemName ||
-                            savedItems.find((v) => v.name === itemName)
+                            savedItems.find(
+                                (v) =>
+                                    v.name.toLowerCase() ===
+                                    itemName.toLowerCase()
+                            )
                         }
                     >
                         Hinzufügen

@@ -105,8 +105,8 @@ export const ShoppingList = ({
                     let utterance = new SpeechSynthesisUtterance(motivation);
 
                     utterance.voice = voice;
-                    utterance.pitch = 0.3;
-                    utterance.rate = 0.7;
+                    utterance.pitch = 0.2;
+                    utterance.rate = 0.9;
                     utterance.volume = 1;
 
                     synthesis.speak(utterance);
@@ -259,23 +259,6 @@ export const ShoppingList = ({
 
         save(storageName, newSavedItems);
 
-        const newItems = [
-            ...items,
-            {
-                id: newId,
-                name: newItem.name,
-                stack: newItem.stack,
-                unit: newItem.unit,
-                quantity: newItem.stack,
-                price: newItem.price,
-                category: newItem.category,
-            },
-        ];
-
-        setItems(newItems);
-
-        save(itemStorageName, newItems);
-
         setItemName("");
     };
 
@@ -372,9 +355,15 @@ export const ShoppingList = ({
             </div>
         ));
 
-    const total = (
+    const totalCost = (
         items?.filter((v) => v.action === "deleted" && v.price) || []
     ).reduce(
+        (prev, current) =>
+            prev + current.price * (current.quantity / current.stack),
+        0
+    );
+
+    const total = (items?.filter((v) => v.price) || []).reduce(
         (prev, current) =>
             prev + current.price * (current.quantity / current.stack),
         0
@@ -390,21 +379,41 @@ export const ShoppingList = ({
 
     return (
         <div className={classNames(className, "p-4")}>
-            {motivation && (
-                <Marquee className="text-sm mb-2 mr-2" speed={20}>
-                    {motivation}
-                </Marquee>
-            )}
-            {items.length > 0 && (
-                <div className="grid grid-cols-1 mb-4">{renderItems}</div>
-            )}
-            {total > 0 && (
-                <div className="text-right mb-4 px-2">
-                    <span className="font-bold">
-                        Zu bezahlen: {formatCurrency(total, "€")}
-                    </span>
-                </div>
-            )}
+            <div
+                className={classNames({
+                    "mb-4":
+                        motivation ||
+                        items.length > 0 ||
+                        total > 0 ||
+                        totalCost > 0,
+                })}
+            >
+                {motivation && (
+                    <Marquee className="text-sm mb-2 mr-2" speed={20}>
+                        {motivation}
+                    </Marquee>
+                )}
+                {items.length > 0 && (
+                    <div className="grid grid-cols-1">{renderItems}</div>
+                )}
+                {total > 0 && (
+                    <div className="text-right p-2 border-b">
+                        <span className="font-bold">
+                            Gesamt: {formatCurrency(total, "€")}
+                        </span>
+                    </div>
+                )}
+                {totalCost > 0 && (
+                    <div className="text-right p-2 border-b">
+                        <span className="font-bold">
+                            Zu bezahlen:{" "}
+                            <span className="underline-offset-2 underline">
+                                {formatCurrency(totalCost, "€")}
+                            </span>
+                        </span>
+                    </div>
+                )}
+            </div>
             <form
                 onSubmit={(e) => handleItemAdd(itemName, e)}
                 className="flex items-center mb-2"

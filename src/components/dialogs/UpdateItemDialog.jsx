@@ -13,7 +13,7 @@ export const UpdateItemDialog = ({
     ...props
 }) => {
     const [itemName, setItemName] = useState(item?.name);
-    const [unit, setUnit] = useState(item?.unit || "Stück");
+    const [unit, setUnit] = useState(item?.unit || "Packung");
     const [stack, setStack] = useState(item?.stack || 1);
     const [category, setCategory] = useState(item?.category || "");
     const [price, setPrice] = useState(item?.price || "");
@@ -51,7 +51,7 @@ export const UpdateItemDialog = ({
 
     const init = () => {
         setItemName(item?.name);
-        setUnit(item?.unit || "Stück");
+        setUnit(item?.unit || "Packung");
         setStack(item?.stack || 1);
         setCategory(item?.category || "");
         setPrice(item?.price || "");

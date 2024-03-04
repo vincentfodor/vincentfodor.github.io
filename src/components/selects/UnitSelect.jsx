@@ -3,6 +3,7 @@ import { Select } from "../Select";
 export const UnitSelect = ({ ...props }) => {
     return (
         <Select {...props}>
+            <option value="Packung">Packung</option>
             <option value="Stück">Stück</option>
             <option value="g">Gramm</option>
             <option value="kg">Kilogramm</option>
