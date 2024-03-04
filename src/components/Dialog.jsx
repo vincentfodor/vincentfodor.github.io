@@ -22,7 +22,7 @@ export const Dialog = ({
             <div className="absolute w-full h-full bg-black/10" />
             <div className="absolute w-full h-full flex items-center justify-center p-4">
                 <div
-                    className="bg-white w-full rounded-lg sm:w-96"
+                    className="bg-white w-full rounded-lg sm:w-96 drop-shadow-2xl"
                     onClick={(e) => e.stopPropagation()}
                 >
                     <div className="flex border-b p-4 text-lg font-bold items-center">
