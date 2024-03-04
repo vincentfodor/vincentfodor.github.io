@@ -310,7 +310,7 @@ export const ShoppingList = ({
                 {item.name}
             </div>
             <div
-                className={classNames("py-2 pr-4 shrink-0", {
+                className={classNames("py-2 shrink-0 pr-2", {
                     "line-through": item.action === "deleted",
                 })}
             >{`${item.quantity} ${item.unit}`}</div>
