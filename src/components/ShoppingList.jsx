@@ -343,7 +343,7 @@ export const ShoppingList = ({
                 <div className="grow">
                     <Button
                         onClick={(e) => handleDeleteSavedItem(item, e)}
-                        className="bg-transparent !text-black w-8 h-8 rounded-full active:scale-110 transition"
+                        className="bg-transparent !text-black w-10 h-10 rounded-full active:scale-110 transition"
                     >
                         <FontAwesomeIcon
                             icon={faTrashAlt}
@@ -366,7 +366,7 @@ export const ShoppingList = ({
                         />
                     </Button>
                 </div>
-                <div className="flex flex-col py-2 font-semibold pr-4">
+                <div className="flex flex-col py-2 font-semibold pr-2">
                     {item.name}
                 </div>
             </div>
