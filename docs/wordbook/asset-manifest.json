@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/wordbook/static/css/main.509cd848.css",
-    "main.js": "/wordbook/static/js/main.b81a9ff4.js",
+    "main.js": "/wordbook/static/js/main.beb8ad48.js",
     "static/js/453.d1c1f3ac.chunk.js": "/wordbook/static/js/453.d1c1f3ac.chunk.js",
     "index.html": "/wordbook/index.html",
     "main.509cd848.css.map": "/wordbook/static/css/main.509cd848.css.map",
-    "main.b81a9ff4.js.map": "/wordbook/static/js/main.b81a9ff4.js.map",
+    "main.beb8ad48.js.map": "/wordbook/static/js/main.beb8ad48.js.map",
     "453.d1c1f3ac.chunk.js.map": "/wordbook/static/js/453.d1c1f3ac.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.509cd848.css",
-    "static/js/main.b81a9ff4.js"
+    "static/js/main.beb8ad48.js"
   ]
 }
