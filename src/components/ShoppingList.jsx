@@ -333,9 +333,7 @@ export const ShoppingList = ({
   const renderSavedItems = (filteredSavedItems || [])
     .sort((a, b) => sortSavedItems(a, b, sort))
     .map((item) => {
-      const existingItem = items.find(
-        (v) => v.savedId === item.id && item.action !== "deleted"
-      );
+      const existingItem = items.find((v) => v.savedId === item.id);
 
       if (existingItem) {
         return;
