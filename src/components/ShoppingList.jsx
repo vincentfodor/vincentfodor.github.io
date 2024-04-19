@@ -324,7 +324,7 @@ export const ShoppingList = ({
 
       return (
         <div>
-          <h3 className="font-bold mb-2">{key}</h3>
+          <h3 className="font-bold mb-1">{key}</h3>
           {renderItems(group)}
         </div>
       );
