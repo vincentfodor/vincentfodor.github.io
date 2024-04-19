@@ -223,8 +223,22 @@ export const ShoppingList = ({
       return v;
     });
 
+    let newItems = (items || []).map((v) => {
+      if (v.savedId === item.id) {
+        return {
+          ...v,
+          ...item,
+        };
+      }
+
+      return v;
+    });
+
     setSavedItems(newSavedItems);
+    setItems(newItems);
+
     save(storageName, newSavedItems);
+    save(itemStorageName, newSavedItems);
   };
 
   const handleItemCreate = (newItem) => {
@@ -286,12 +300,21 @@ export const ShoppingList = ({
     }
   });
 
+  const handleItemContextMenu = (e, item) => {
+    e.preventDefault();
+
+    const savedItem = savedItems.find((v) => v.id === item.savedId);
+
+    setCurrentItem(savedItem);
+  };
+
   const renderItems = (list) =>
     (list || []).map((item) => (
       <div
         key={`item-${item.id}`}
         className="flex flex-row items-center active:scale-105 cursor-pointer transition border-b border-gray-200 pl-2"
         onClick={() => handleItemCheck(item)}
+        onContextMenu={(e) => handleItemContextMenu(e, item)}
       >
         <div
           className={classNames("flex grow flex-col py-2 font-normal mr-2", {
@@ -493,7 +516,6 @@ export const ShoppingList = ({
       <UpdateItemDialog
         item={currentItem}
         onSubmit={(newItem) => {
-          console.log(newItem);
           handleEditSavedItem(newItem);
         }}
         open={currentItem}
