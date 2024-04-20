@@ -209,6 +209,8 @@ export const ShoppingList = ({
       return;
     }
 
+    setCurrentItem(null);
+
     const newSavedItems = savedItems.filter((v) => v.id !== item.id);
 
     setSavedItems(newSavedItems);
@@ -368,33 +370,13 @@ export const ShoppingList = ({
           key={`saved-item-${item.id}`}
           className="flex flex-row items-center active:scale-105 cursor-pointer transition border-b"
           onClick={() => handleItemAdd(item.name)}
-        >
-          <div className="grow">
-            <Button
-              onClick={(e) => handleDeleteSavedItem(item, e)}
-              className="bg-transparent !text-black w-10 h-10 rounded-full active:scale-110 transition"
-            >
-              <FontAwesomeIcon
-                icon={faTrashAlt}
-                size="sm"
-                className="text-red-500"
-              />
-            </Button>
-            <Button
-              onClick={(e) => {
-                e.stopPropagation();
+          onContextMenu={(e) => {
+            e.preventDefault();
 
-                setCurrentItem(item);
-              }}
-              className="bg-transparent !text-black w-10 h-10 rounded-full active:scale-110 transition"
-            >
-              <FontAwesomeIcon
-                icon={faPenAlt}
-                size="sm"
-                className="text-slate-600"
-              />
-            </Button>
-          </div>
+            setCurrentItem(item);
+          }}
+        >
+          <div className="grow" />
           <div className="flex flex-col py-2 font-semibold pr-2">
             {item.name}
           </div>
@@ -534,6 +516,7 @@ export const ShoppingList = ({
         open={currentItem}
         onClose={() => setCurrentItem(null)}
         savedItems={savedItems}
+        onDelete={(item, e) => handleDeleteSavedItem(item, e)}
       />
     </div>
   );
