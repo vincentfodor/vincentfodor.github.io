@@ -239,7 +239,7 @@ export const ShoppingList = ({
     setItems(newItems);
 
     save(storageName, newSavedItems);
-    save(itemStorageName, newSavedItems);
+    save(itemStorageName, newItems);
   };
 
   const handleItemCreate = (newItem) => {
