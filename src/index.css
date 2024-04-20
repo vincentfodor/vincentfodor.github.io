@@ -24,3 +24,8 @@ code {
 a {
     text-decoration: underline;
 }
+
+meter::-webkit-meter-bar {background: #d4d4d4;} /*background color of bar*/
+meter::-webkit-meter-optimum-value {background: green}
+meter::-webkit-meter-suboptimum-value{background:orange;}
+meter::-webkit-meter-even-less-good-value{background:red;}

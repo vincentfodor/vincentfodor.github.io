@@ -13,6 +13,7 @@ import {
 import { Select } from "./Select";
 import { AddItemDialog } from "./dialogs/AddItemDialog";
 import { UpdateItemDialog } from "./dialogs/UpdateItemDialog";
+import { ProgressBar } from "./ProgressBar";
 
 export const ShoppingList = ({
   className,
@@ -421,6 +422,8 @@ export const ShoppingList = ({
     ),
   ];
 
+  const localStorageSizeInMB = getObjectSize(localStorage);
+
   return (
     <div className={classNames(className, "p-4")}>
       <div
@@ -504,7 +507,17 @@ export const ShoppingList = ({
           ))}
         </div>
       )}
-      <div className="grid grid-cols-1 gap-2">{renderSavedItems}</div>
+      <div className="grid grid-cols-1 gap-2 mb-4">{renderSavedItems}</div>
+      <div>
+        <h3 className="font-semibold">Speicherplatz verfügbar</h3>
+        <ProgressBar
+          value={localStorageSizeInMB}
+          min={0}
+          max={10}
+          leftLabel={`${localStorageSizeInMB.toFixed(2)} mb`}
+          rightLabel={"10 mb"}
+        />
+      </div>
       <AddItemDialog
         open={isAddItemDialogOpen}
         onClose={() => setIsAddItemDialogOpen(false)}
@@ -593,4 +606,38 @@ const formatCurrency = (number, symbol = "$") => {
 
   // Format the number as a currency string
   return `${formattedNumber} ${symbol}`;
+};
+
+const getObjectSize = (object) => {
+  const objectList = [];
+  const stack = [object];
+  let bytes = 0;
+
+  while (stack.length) {
+    const value = stack.pop();
+
+    switch (typeof value) {
+      case "boolean":
+        bytes += 4;
+        break;
+      case "string":
+        bytes += value.length * 2;
+        break;
+      case "number":
+        bytes += 8;
+        break;
+      case "object":
+        if (!objectList.includes(value)) {
+          objectList.push(value);
+          for (const prop in value) {
+            if (value.hasOwnProperty(prop)) {
+              stack.push(value[prop]);
+            }
+          }
+        }
+        break;
+    }
+  }
+
+  return bytes / 1000000;
 };
