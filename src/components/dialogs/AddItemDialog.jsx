@@ -150,6 +150,7 @@ export const AddItemDialog = ({
                                     itemName.toLowerCase()
                             )
                         }
+                        type="submit"
                     >
                         Hinzufügen
                     </Button>
