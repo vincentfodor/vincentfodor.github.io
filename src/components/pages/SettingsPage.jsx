@@ -83,7 +83,13 @@ export const SettingsPage = () => {
           rightLabel={"10 mb"}
         />
       </div>
-      <input type="file" hidden ref={inputRef} onChange={handleFileChange} />
+      <input
+        accept="application/json"
+        type="file"
+        hidden
+        ref={inputRef}
+        onChange={handleFileChange}
+      />
     </div>
   );
 };
