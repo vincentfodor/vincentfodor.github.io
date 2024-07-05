@@ -4,15 +4,19 @@ import { Header } from "./components/Header";
 import { ShoppingList } from "./components/ShoppingList";
 import { Button } from "./components/Button";
 import {
+    faCog,
     faDownload,
     faVolumeHigh,
     faVolumeTimes,
 } from "@fortawesome/free-solid-svg-icons";
-import { Link, Route, Router, Routes } from "react-router-dom";
+import { Link, Route, Routes, useNavigate, NavLink } from "react-router-dom";
 import { ImprintPage } from "./pages/ImprintPage";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { SettingsPage } from "./components/pages/SettingsPage";
 
 function App() {
+    const navigate = useNavigate();
+
     const [username, setUsername] = useState(localStorage.getItem("username"));
     const [isPWAUsed, setIsPWAUsed] = useState(false);
     const [deferredPrompt, setDeferredPrompt] = useState(null);
@@ -64,9 +68,15 @@ function App() {
         }
     };
 
-    const renderTitle = username?.endsWith("s")
-        ? `📔 ${username}' Zettel`
-        : `📔 ${username}s Zettel`;
+    const renderTitle = () => {
+        return (
+            <NavLink to="/" className="no-underline">
+                {username?.endsWith("s")
+                    ? `📔 ${username}' Zettel`
+                    : `📔 ${username}s Zettel`}
+            </NavLink>
+        )
+    }
 
     if (!username) {
         return null;
@@ -90,7 +100,9 @@ function App() {
 
                             localStorage.setItem("muted", !isMuted);
                         }}
+                        className="mr-4"
                     />
+                    <FontAwesomeIcon icon={faCog} onClick={() => navigate("/settings")} />
                 </div>
             );
         } else if (!isPWAUsed && !deferredPrompt) {
@@ -106,26 +118,32 @@ function App() {
 
                             localStorage.setItem("muted", !isMuted);
                         }}
+                        className="mr-4"
                     />
+                    <FontAwesomeIcon icon={faCog} onClick={() => navigate("/settings")} />
                 </div>
             );
         }
 
         return (
-            <FontAwesomeIcon
-                icon={isMuted ? faVolumeTimes : faVolumeHigh}
-                onClick={() => {
-                    setIsMuted(!isMuted);
+            <div >
+                <FontAwesomeIcon
+                    icon={isMuted ? faVolumeTimes : faVolumeHigh}
+                    onClick={() => {
+                        setIsMuted(!isMuted);
 
-                    localStorage.setItem("muted", !isMuted);
-                }}
-            />
+                        localStorage.setItem("muted", !isMuted);
+                    }}
+                    className="mr-4"
+                />
+                <FontAwesomeIcon icon={faCog} onClick={() => navigate("/settings")} />
+            </div>
         );
     };
 
     return (
         <div className="max-w-screen-md mx-auto lg:pt-16">
-            <Header title={renderTitle} rightText={renderRightText()} />
+            <Header title={renderTitle()} rightText={renderRightText()} />
             <div className="h-[73px] md:hidden"></div>
             <Routes>
                 <Route
@@ -137,6 +155,13 @@ function App() {
                             itemStorageName="main-items"
                             isMuted={isMuted}
                         />
+                    }
+                />
+                <Route
+                    exact
+                    path="/settings"
+                    element={
+                        <SettingsPage />
                     }
                 />
                 <Route exact path="/impressum" element={<ImprintPage />} />
