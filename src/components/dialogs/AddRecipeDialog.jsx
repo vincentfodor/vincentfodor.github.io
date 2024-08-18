@@ -86,54 +86,52 @@ export const AddRecipeDialog = ({
                                 recipeName.toLowerCase()
                         )
                     }
-                    type="submit"
+                    onClick={handleSubmit}
                 >
                     Hinzufügen
                 </Button>
             }
             {...props}
         >
-            <form onSubmit={handleSubmit}>
-                <div className="space-y-2 mb-4">
-                    <Textbox
-                        autoFocus={!recipeNameProp}
-                        type="text"
-                        label="Bezeichnung"
-                        value={recipeName}
-                        onChange={(e) => setRecipeName(e.target.value)}
-                        maxLength={24}
-                        error={
-                            recipes.find(
-                                (v) =>
-                                    v.name.toLowerCase() ===
-                                    recipeName.toLowerCase()
-                            ) &&
-                            "Ein Rezept mit dieser Bezeichnung exisitiert bereits."
-                        }
+            <div className="space-y-2 mb-4">
+                <Textbox
+                    autoFocus={!recipeNameProp}
+                    type="text"
+                    label="Bezeichnung"
+                    value={recipeName}
+                    onChange={(e) => setRecipeName(e.target.value)}
+                    maxLength={24}
+                    error={
+                        recipes.find(
+                            (v) =>
+                                v.name.toLowerCase() ===
+                                recipeName.toLowerCase()
+                        ) &&
+                        "Ein Rezept mit dieser Bezeichnung exisitiert bereits."
+                    }
+                />
+                <div>
+                    <CategorySelect
+                        label="Kategorie"
+                        value={category}
+                        onChange={(e) => setCategory(e.target.value)}
+                        savedItems={recipes}
+                        optional
                     />
-                    <div>
-                        <CategorySelect
-                            label="Kategorie"
-                            value={category}
-                            onChange={(e) => setCategory(e.target.value)}
-                            savedItems={recipes}
-                            optional
-                        />
-                        <Textbox
-                            autoFocus={recipeNameProp}
-                            type="text"
-                            placeholder="Neue Kategorie"
-                            value={category}
-                            onChange={(e) => setCategory(e.target.value)}
-                            maxLength={24}
-                        />
-                    </div>
-                    <div>
-                        <label className="mb-1 block">Produkte</label>
-                        <ItemPicker disableTimesAdded />
-                    </div>
+                    <Textbox
+                        autoFocus={recipeNameProp}
+                        type="text"
+                        placeholder="Neue Kategorie"
+                        value={category}
+                        onChange={(e) => setCategory(e.target.value)}
+                        maxLength={24}
+                    />
                 </div>
-            </form>
+                <div>
+                    <label className="mb-1 block">Produkte</label>
+                    <ItemPicker disableTimesAdded />
+                </div>
+            </div>
         </Dialog>
     );
 };
