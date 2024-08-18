@@ -8,6 +8,7 @@ export const Dialog = ({
     open,
     onClose,
     title,
+    buttons,
     ...props
 }) => {
     if (!open) {
@@ -22,19 +23,26 @@ export const Dialog = ({
             <div className="absolute w-full h-full bg-black/10" />
             <div className="absolute w-full h-full flex items-center justify-center p-4">
                 <div
-                    className="bg-white w-full rounded-lg sm:w-96 drop-shadow-2xl"
+                    className="flex flex-col bg-white w-full rounded-lg max-h-full sm:w-96 drop-shadow-2xl"
                     onClick={(e) => e.stopPropagation()}
                 >
                     <div className="flex border-b p-4 text-lg font-bold items-center">
                         <h3 className="grow text-base">{title}</h3>
                         <Button
-                            className="bg-transparent text-black"
+                            className="bg-transparent text-black !p-2"
                             onClick={onClose}
                         >
-                            <FontAwesomeIcon icon={faClose} size="md" />
+                            <FontAwesomeIcon
+                                icon={faClose}
+                                size="md"
+                                className="text-black"
+                            />
                         </Button>
                     </div>
-                    <div className="p-4">{children}</div>
+                    <div className="p-4 grow overflow-y-auto">{children}</div>
+                    {!!buttons && (
+                        <div className="p-4 text-right border-t">{buttons}</div>
+                    )}
                 </div>
             </div>
         </div>

@@ -15,6 +15,8 @@ import { AddItemDialog } from "./dialogs/AddItemDialog";
 import { UpdateItemDialog } from "./dialogs/UpdateItemDialog";
 import { ProgressBar } from "./ProgressBar";
 import { ItemPicker } from "./ItemPicker";
+import { ViewButton } from "./buttons/ViewButton";
+import { RecipePicker } from "./RecipePicker";
 
 export const ShoppingList = ({
     className,
@@ -25,11 +27,9 @@ export const ShoppingList = ({
 }) => {
     const [items, setItems] = useState([]);
     const [savedItems, setSavedItems] = useState([]);
-    const [itemName, setItemName] = useState("");
     const [motivation, setMotivation] = useState("");
-    const [isAddItemDialogOpen, setIsAddItemDialogOpen] = useState(false);
-    const [categoryFilter, setCategoryFilter] = useState(null);
     const [currentItem, setCurrentItem] = useState(null);
+    const [view, setView] = useState("products");
 
     useEffect(() => {
         const itemList = localStorage.getItem(itemStorageName);
@@ -215,16 +215,6 @@ export const ShoppingList = ({
         localStorage.setItem(name, JSON.stringify(data));
     };
 
-    let filteredSavedItems = (savedItems || []).filter((item) =>
-        item.name.toLowerCase().includes(itemName.toLowerCase())
-    );
-
-    if (categoryFilter) {
-        filteredSavedItems = (filteredSavedItems || []).filter(
-            (item) => item.category === categoryFilter
-        );
-    }
-
     const itemGroups = {};
 
     items.forEach((item) => {
@@ -358,11 +348,28 @@ export const ShoppingList = ({
                     </div>
                 )}
             </div>
-            <ItemPicker
-                onPick={handleItemAdd}
-                onItemEdit={handleEditSavedItem}
-                items={items}
-            />
+            <div className="grid grid-cols-2 gap-2 p-2 rounded-lg bg-neutral-100 mb-2">
+                <ViewButton
+                    active={view === "products"}
+                    onClick={() => setView("products")}
+                >
+                    Produkte
+                </ViewButton>
+                <ViewButton
+                    active={view === "recipes"}
+                    onClick={() => setView("recipes")}
+                >
+                    Rezepte
+                </ViewButton>
+            </div>
+            {view === "products" && (
+                <ItemPicker
+                    onPick={handleItemAdd}
+                    onItemEdit={handleEditSavedItem}
+                    items={items}
+                />
+            )}
+            {view === "recipes" && <RecipePicker items={items} />}
             <UpdateItemDialog
                 item={currentItem}
                 onSubmit={(newItem) => {

@@ -7,33 +7,32 @@ import { Select } from "./Select";
 import classNames from "classnames";
 import { AddItemDialog } from "./dialogs/AddItemDialog";
 import { UpdateItemDialog } from "./dialogs/UpdateItemDialog";
+import { AddRecipeDialog } from "./dialogs/AddRecipeDialog";
 
-export const ItemPicker = ({
-    itemStorageName = "main-items",
-    storageName = "main",
+export const RecipePicker = ({
+    storageName = "main-recipes",
     items = [],
     onItemEdit = () => {},
     onItemDelete = () => {},
     onPick = () => {},
-    disableTimesAdded,
 }) => {
-    const [savedItems, setSavedItems] = useState([]);
-    const [itemName, setItemName] = useState("");
-    const [isAddItemDialogOpen, setIsAddItemDialogOpen] = useState(false);
+    const [recipes, setRecipes] = useState([]);
+    const [recipeName, setRecipeName] = useState("");
+    const [isAddRecipeDialogOpen, setIsAddRecipeDialogOpen] = useState(false);
     const [categoryFilter, setCategoryFilter] = useState(null);
     const [sort, setSort] = useState(
-        localStorage.getItem(`${itemStorageName}-sort`) || "timesAdded-desc"
+        localStorage.getItem(`${storageName}-sort`) || "timesAdded-desc"
     );
     const [currentItem, setCurrentItem] = useState(null);
 
     useEffect(() => {
-        const savedList = localStorage.getItem(storageName);
+        const recipeList = localStorage.getItem(storageName);
 
-        if (savedList) {
+        if (recipeList) {
             try {
-                const parsedSavedList = JSON.parse(savedList);
+                const parsedSavedList = JSON.parse(recipeList);
 
-                setSavedItems(parsedSavedList);
+                setRecipes(parsedSavedList);
             } catch (e) {
                 console.error(e);
                 alert("Fuck");
@@ -45,39 +44,27 @@ export const ItemPicker = ({
         localStorage.setItem(name, JSON.stringify(data));
     };
 
-    let filteredSavedItems = (savedItems || []).filter((item) =>
-        item.name.toLowerCase().includes(itemName.toLowerCase())
+    let filteredRecipeList = (recipes || []).filter((recipe) =>
+        recipe.name.toLowerCase().includes(recipeName.toLowerCase())
     );
 
-    if (categoryFilter) {
-        filteredSavedItems = (filteredSavedItems || []).filter(
-            (item) => item.category === categoryFilter
-        );
-    }
-
-    const renderSavedItems = (filteredSavedItems || [])
+    const renderRecipes = (filteredRecipeList || [])
         .sort((a, b) => sortSavedItems(a, b, sort))
-        .map((item) => {
-            const existingItem = items.find((v) => v.savedId === item.id);
-
-            if (existingItem) {
-                return;
-            }
-
+        .map((recipe) => {
             return (
                 <div
-                    key={`saved-item-${item.id}`}
+                    key={`saved-item-${recipe.id}`}
                     className="flex flex-row items-center active:scale-105 cursor-pointer transition border-b"
-                    onClick={() => addItem(item.name)}
+                    onClick={() => addRecipe(recipe.name)}
                     onContextMenu={(e) => {
                         e.preventDefault();
 
-                        setCurrentItem(item);
+                        setCurrentItem(recipe);
                     }}
                 >
                     <div className="grow" />
                     <div className="flex flex-col py-2 font-semibold pr-2">
-                        {item.name}
+                        {recipe.name}
                     </div>
                 </div>
             );
@@ -88,53 +75,48 @@ export const ItemPicker = ({
             e.preventDefault();
         }
 
-        addItem(itemName);
+        addRecipe(recipeName);
     };
 
-    const addItem = (name) => {
+    const addRecipe = (name) => {
         if (!name) {
-            setIsAddItemDialogOpen(true);
+            setIsAddRecipeDialogOpen(true);
 
             return;
         }
 
-        const newId =
-            items.length > 0 ? Math.max(...items.map((o) => o.id)) + 1 : 0;
-
-        const savedItem = savedItems.find(
+        const existingRecipe = recipes.find(
             (v) => v.name.toLowerCase() === name.toLowerCase()
         );
 
-        if (savedItem) {
+        if (existingRecipe) {
             // Item already exists in saved items
 
-            if (!disableTimesAdded) {
-                let newSavedItems = savedItems.map((v) => {
-                    if (v.id === savedItem.id) {
-                        return {
-                            ...v,
-                            timesAdded: savedItem.timesAdded + 1,
-                        };
-                    }
+            let newRecipes = recipes.map((v) => {
+                if (v.id === existingRecipe.id) {
+                    return {
+                        ...v,
+                        timesAdded: existingRecipe.timesAdded + 1,
+                    };
+                }
 
-                    return v;
-                });
+                return v;
+            });
 
-                setSavedItems(newSavedItems);
+            setRecipes(newRecipes);
 
-                save(storageName, newSavedItems);
-            }
+            save(storageName, newRecipes);
 
-            onPick(savedItem);
+            onPick(existingRecipe);
         } else {
             // New Item
 
-            setIsAddItemDialogOpen(true);
+            setIsAddRecipeDialogOpen(true);
         }
     };
 
-    const handleEditSavedItem = (item) => {
-        let newSavedItems = savedItems.map((v) => {
+    const handleEditRecipe = (item) => {
+        let newRecipes = recipes.map((v) => {
             if (v.id === item.id) {
                 return item;
             }
@@ -142,40 +124,34 @@ export const ItemPicker = ({
             return v;
         });
 
-        setSavedItems(newSavedItems);
+        setRecipes(newRecipes);
 
-        save(storageName, newSavedItems);
+        save(storageName, newRecipes);
 
         onItemEdit(item);
     };
 
-    const handleItemCreate = (newItem) => {
+    const handleRecipeCreate = (newRecipe) => {
         const newSavedId =
-            savedItems.length > 0
-                ? Math.max(...savedItems.map((o) => o.id)) + 1
-                : 0;
+            recipes.length > 0 ? Math.max(...recipes.map((o) => o.id)) + 1 : 0;
 
         const newSavedItems = [
-            ...savedItems,
+            ...recipes,
             {
+                ...newRecipe,
                 id: newSavedId,
-                name: newItem.name,
-                stack: newItem.stack,
-                unit: newItem.unit,
                 timesAdded: 1,
-                price: newItem.price,
-                category: newItem.category,
             },
         ];
 
-        setSavedItems(newSavedItems);
+        setRecipes(newSavedItems);
 
         save(storageName, newSavedItems);
 
-        setItemName("");
+        setRecipeName("");
     };
 
-    const handleDeleteSavedItem = (item, e) => {
+    const handleRecipeDelete = (item, e) => {
         if (e) {
             e.stopPropagation();
         }
@@ -190,17 +166,17 @@ export const ItemPicker = ({
 
         setCurrentItem(null);
 
-        const newSavedItems = savedItems.filter((v) => v.id !== item.id);
+        const newRecipes = recipes.filter((v) => v.id !== item.id);
 
-        setSavedItems(newSavedItems);
-        save(storageName, newSavedItems);
+        setRecipes(newRecipes);
+        save(storageName, newRecipes);
     };
 
     const categories = [
         ...new Set(
-            savedItems
-                .filter((item) => item.category)
-                .map((item) => item.category)
+            recipes
+                .filter((recipe) => recipe.category)
+                .map((recipe) => recipe.category)
         ),
     ];
 
@@ -214,9 +190,9 @@ export const ItemPicker = ({
                     <Textbox
                         type="text"
                         className="grow mr-2"
-                        value={itemName}
-                        onChange={(e) => setItemName(e.target.value)}
-                        placeholder="Produkte suchen oder hinzufügen..."
+                        value={recipeName}
+                        onChange={(e) => setRecipeName(e.target.value)}
+                        placeholder="Rezepte suchen oder hinzufügen..."
                     />
                     <Button
                         type="submit"
@@ -232,10 +208,7 @@ export const ItemPicker = ({
                             let value = e.target.value;
 
                             setSort(value);
-                            localStorage.setItem(
-                                `${itemStorageName}-sort`,
-                                value
-                            );
+                            localStorage.setItem(`${storageName}-sort`, value);
                         }}
                     >
                         <option value="timesAdded-asc">Meistgekauft</option>
@@ -265,26 +238,25 @@ export const ItemPicker = ({
                     </div>
                 )}
                 <div className="grid grid-cols-1 gap-2 mb-4">
-                    {renderSavedItems}
+                    {renderRecipes}
                 </div>
             </div>
-            <AddItemDialog
-                open={isAddItemDialogOpen}
-                onClose={() => setIsAddItemDialogOpen(false)}
-                itemName={itemName}
-                savedItems={savedItems}
-                onSubmit={handleItemCreate}
-                category={categoryFilter}
+            <AddRecipeDialog
+                open={isAddRecipeDialogOpen}
+                onClose={() => setIsAddRecipeDialogOpen(false)}
+                itemName={recipeName}
+                recipes={recipes}
+                onSubmit={handleRecipeCreate}
             />
             <UpdateItemDialog
                 item={currentItem}
                 onSubmit={(newItem) => {
-                    handleEditSavedItem(newItem);
+                    handleEditRecipe(newItem);
                 }}
                 open={currentItem}
                 onClose={() => setCurrentItem(null)}
-                savedItems={savedItems}
-                onDelete={(item, e) => handleDeleteSavedItem(item, e)}
+                savedItems={recipes}
+                onDelete={(item, e) => handleRecipeDelete(item, e)}
             />
         </>
     );

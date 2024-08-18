@@ -75,8 +75,8 @@ function App() {
                     ? `📔 ${username}' Zettel`
                     : `📔 ${username}s Zettel`}
             </NavLink>
-        )
-    }
+        );
+    };
 
     if (!username) {
         return null;
@@ -102,7 +102,10 @@ function App() {
                         }}
                         className="mr-4"
                     />
-                    <FontAwesomeIcon icon={faCog} onClick={() => navigate("/settings")} />
+                    <FontAwesomeIcon
+                        icon={faCog}
+                        onClick={() => navigate("/settings")}
+                    />
                 </div>
             );
         } else if (!isPWAUsed && !deferredPrompt) {
@@ -120,13 +123,16 @@ function App() {
                         }}
                         className="mr-4"
                     />
-                    <FontAwesomeIcon icon={faCog} onClick={() => navigate("/settings")} />
+                    <FontAwesomeIcon
+                        icon={faCog}
+                        onClick={() => navigate("/settings")}
+                    />
                 </div>
             );
         }
 
         return (
-            <div >
+            <div>
                 <FontAwesomeIcon
                     icon={isMuted ? faVolumeTimes : faVolumeHigh}
                     onClick={() => {
@@ -136,7 +142,10 @@ function App() {
                     }}
                     className="mr-4"
                 />
-                <FontAwesomeIcon icon={faCog} onClick={() => navigate("/settings")} />
+                <FontAwesomeIcon
+                    icon={faCog}
+                    onClick={() => navigate("/settings")}
+                />
             </div>
         );
     };
@@ -157,18 +166,12 @@ function App() {
                         />
                     }
                 />
-                <Route
-                    exact
-                    path="/settings"
-                    element={
-                        <SettingsPage />
-                    }
-                />
+                <Route exact path="/settings" element={<SettingsPage />} />
                 <Route exact path="/impressum" element={<ImprintPage />} />
             </Routes>
-            <div className="text-center my-4">
+            {/* <div className="text-center my-4">
                 <Link to="/impressum">Impressum</Link>
-            </div>
+            </div> */}
         </div>
     );
 }
