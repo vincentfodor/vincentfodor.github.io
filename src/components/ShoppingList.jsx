@@ -120,47 +120,48 @@ export const ShoppingList = ({
     };
 
     const handleItemAdd = (item) => {
-        const newId =
-            items.length > 0 ? Math.max(...items.map((o) => o.id)) + 1 : 0;
+        setItems((prevItems) => {
+            const newId =
+                prevItems.length > 0
+                    ? Math.max(...prevItems.map((o) => o.id)) + 1
+                    : 0;
+            const existingItem = prevItems.find(
+                (v) =>
+                    v.name.toLowerCase() === item.name.toLowerCase() &&
+                    v.action !== "deleted"
+            );
 
-        let newItems;
+            if (existingItem) {
+                return prevItems;
+            }
 
-        const existingItem = items.find(
-            (v) =>
-                v.name.toLowerCase() === item.name.toLowerCase() &&
-                v.action !== "deleted"
-        );
+            const newItems = existingItem
+                ? prevItems.map((v) =>
+                      v.id === existingItem.id
+                          ? {
+                                ...v,
+                                quantity:
+                                    Number(v.quantity) + Number(item.stack),
+                            }
+                          : v
+                  )
+                : [
+                      ...prevItems,
+                      {
+                          id: newId,
+                          savedId: item.id,
+                          name: item.name,
+                          stack: item.stack,
+                          unit: item.unit,
+                          quantity: item.stack,
+                          price: item.price,
+                          category: item.category,
+                      },
+                  ];
 
-        if (existingItem) {
-            newItems = items.map((v) => {
-                if (v.id === existingItem.id) {
-                    return {
-                        ...v,
-                        quantity: Number(v.quantity) + Number(item.stack),
-                    };
-                }
-
-                return v;
-            });
-        } else {
-            newItems = [
-                ...items,
-                {
-                    id: newId,
-                    savedId: item.id,
-                    name: item.name,
-                    stack: item.stack,
-                    unit: item.unit,
-                    quantity: item.stack,
-                    price: item.price,
-                    category: item.category,
-                },
-            ];
-        }
-
-        setItems(newItems);
-
-        save(itemStorageName, newItems);
+            save(itemStorageName, newItems);
+            return newItems;
+        });
     };
 
     const handleDeleteSavedItem = (item, e) => {
@@ -209,6 +210,10 @@ export const ShoppingList = ({
 
         save(storageName, newSavedItems);
         save(itemStorageName, newItems);
+    };
+
+    const handleRecipeAdd = (recipe) => {
+        (recipe.items || []).forEach(handleItemAdd);
     };
 
     const save = (name, data) => {
@@ -369,7 +374,9 @@ export const ShoppingList = ({
                     items={items}
                 />
             )}
-            {view === "recipes" && <RecipePicker items={items} />}
+            {view === "recipes" && (
+                <RecipePicker items={items} onPick={handleRecipeAdd} />
+            )}
             <UpdateItemDialog
                 item={currentItem}
                 onSubmit={(newItem) => {

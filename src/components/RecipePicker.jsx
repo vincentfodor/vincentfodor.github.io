@@ -8,6 +8,7 @@ import classNames from "classnames";
 import { AddItemDialog } from "./dialogs/AddItemDialog";
 import { UpdateItemDialog } from "./dialogs/UpdateItemDialog";
 import { AddRecipeDialog } from "./dialogs/AddRecipeDialog";
+import { UpdateRecipeDialog } from "./dialogs/UpdateRecipeDialog";
 
 export const RecipePicker = ({
     storageName = "main-recipes",
@@ -135,7 +136,7 @@ export const RecipePicker = ({
         const newSavedId =
             recipes.length > 0 ? Math.max(...recipes.map((o) => o.id)) + 1 : 0;
 
-        const newSavedItems = [
+        const newRecipes = [
             ...recipes,
             {
                 ...newRecipe,
@@ -144,18 +145,14 @@ export const RecipePicker = ({
             },
         ];
 
-        setRecipes(newSavedItems);
+        setRecipes(newRecipes);
 
-        save(storageName, newSavedItems);
+        save(storageName, newRecipes);
 
         setRecipeName("");
     };
 
-    const handleRecipeDelete = (item, e) => {
-        if (e) {
-            e.stopPropagation();
-        }
-
+    const handleRecipeDelete = (item) => {
         const confirmation = window.confirm(
             `wilsch ${item.name} wirklich löschen?`
         );
@@ -244,19 +241,19 @@ export const RecipePicker = ({
             <AddRecipeDialog
                 open={isAddRecipeDialogOpen}
                 onClose={() => setIsAddRecipeDialogOpen(false)}
-                itemName={recipeName}
+                recipeName={recipeName}
                 recipes={recipes}
                 onSubmit={handleRecipeCreate}
             />
-            <UpdateItemDialog
-                item={currentItem}
+            <UpdateRecipeDialog
+                recipe={currentItem}
                 onSubmit={(newItem) => {
                     handleEditRecipe(newItem);
                 }}
                 open={currentItem}
                 onClose={() => setCurrentItem(null)}
-                savedItems={recipes}
-                onDelete={(item, e) => handleRecipeDelete(item, e)}
+                recipes={recipes}
+                onDelete={handleRecipeDelete}
             />
         </>
     );

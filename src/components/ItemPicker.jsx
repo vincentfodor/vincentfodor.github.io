@@ -142,6 +142,32 @@ export const ItemPicker = ({
             return v;
         });
 
+        const recipeList = localStorage.getItem("main-recipes");
+
+        if (recipeList) {
+            try {
+                const parsedRecipeList = JSON.parse(recipeList);
+
+                parsedRecipeList.forEach((recipe) => {
+                    recipe.items = recipe.items.map((v) => {
+                        if (v.id === item.id) {
+                            return {
+                                ...v,
+                                ...item,
+                            };
+                        }
+
+                        return v;
+                    });
+                });
+
+                save("main-recipes", parsedRecipeList);
+            } catch (e) {
+                console.error(e);
+                alert("Fuck");
+            }
+        }
+
         setSavedItems(newSavedItems);
 
         save(storageName, newSavedItems);

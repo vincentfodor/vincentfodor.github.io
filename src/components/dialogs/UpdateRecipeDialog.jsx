@@ -7,25 +7,21 @@ import { ItemPicker } from "../ItemPicker";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClose } from "@fortawesome/free-solid-svg-icons";
 
-export const AddRecipeDialog = ({
-    recipeName: recipeNameProp = "",
-    category: categoryProp,
+export const UpdateRecipeDialog = ({
+    recipe,
     onSubmit,
     onClose,
+    onDelete,
     recipes,
     ...props
 }) => {
-    const [recipeName, setRecipeName] = useState(recipeNameProp);
-    const [category, setCategory] = useState("");
-    const [items, setItems] = useState([]);
+    const [recipeName, setRecipeName] = useState(recipe?.name || "");
+    const [category, setCategory] = useState(recipe?.category || "");
+    const [items, setItems] = useState(recipe?.items || []);
 
     useEffect(() => {
-        setRecipeName(recipeNameProp);
-    }, [recipeNameProp]);
-
-    useEffect(() => {
-        setCategory(categoryProp);
-    }, [categoryProp]);
+        init();
+    }, [recipe]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -36,6 +32,7 @@ export const AddRecipeDialog = ({
 
         if (onSubmit) {
             onSubmit({
+                ...recipe,
                 name: recipeName,
                 category,
                 items,
@@ -54,9 +51,9 @@ export const AddRecipeDialog = ({
     };
 
     const init = () => {
-        setRecipeName(recipeNameProp);
-        setCategory(categoryProp);
-        setItems([]);
+        setRecipeName(recipe?.name || "");
+        setCategory(recipe?.category || "");
+        setItems(recipe?.items || []);
     };
 
     const validate = () => {
@@ -64,7 +61,9 @@ export const AddRecipeDialog = ({
             !recipeName ||
             !items?.length ||
             recipes.find(
-                (v) => v.name?.toLowerCase() === recipeName?.toLowerCase()
+                (v) =>
+                    recipeName !== recipe.name &&
+                    v.name?.toLowerCase() === recipeName?.toLowerCase()
             )
         ) {
             return false;
@@ -91,20 +90,29 @@ export const AddRecipeDialog = ({
         </div>
     ));
 
+    if (!recipe) {
+        return null;
+    }
+
     return (
         <Dialog
-            title="Rezept hinzufügen"
+            title="Rezept bearbeiten"
             onClose={handleClose}
-            buttons={
+            buttons={[
+                <Button
+                    className="!bg-red-500 !text-white mr-2"
+                    onClick={() => onDelete(recipe)}
+                >
+                    Löschen
+                </Button>,
                 <Button disabled={!validate()} onClick={handleSubmit}>
-                    Hinzufügen
-                </Button>
-            }
+                    Speichern
+                </Button>,
+            ]}
             {...props}
         >
             <div className="space-y-2 mb-4">
                 <Textbox
-                    autoFocus={!recipeNameProp}
                     type="text"
                     label="Bezeichnung"
                     value={recipeName}
@@ -113,8 +121,9 @@ export const AddRecipeDialog = ({
                     error={
                         recipes.find(
                             (v) =>
+                                recipeName !== recipe?.name &&
                                 v.name?.toLowerCase() ===
-                                recipeName?.toLowerCase()
+                                    recipeName?.toLowerCase()
                         ) &&
                         "Ein Rezept mit dieser Bezeichnung exisitiert bereits."
                     }
@@ -128,7 +137,6 @@ export const AddRecipeDialog = ({
                         optional
                     />
                     <Textbox
-                        autoFocus={recipeNameProp}
                         type="text"
                         placeholder="Neue Kategorie"
                         value={category}
