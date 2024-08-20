@@ -27,9 +27,7 @@ export const AddRecipeDialog = ({
         setCategory(categoryProp);
     }, [categoryProp]);
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-
+    const handleSubmit = () => {
         if (!validate()) {
             return;
         }
@@ -95,12 +93,7 @@ export const AddRecipeDialog = ({
         <Dialog
             title="Rezept hinzufügen"
             onClose={handleClose}
-            onSubmit={handleSubmit}
-            buttons={
-                <Button disabled={!validate()} type="submit">
-                    Hinzufügen
-                </Button>
-            }
+            buttons={<Button disabled={!validate()}>Hinzufügen</Button>}
             {...props}
         >
             <div className="space-y-2 mb-4">

@@ -27,9 +27,7 @@ export const AddItemDialog = ({
         setCategory(categoryProp);
     }, [categoryProp]);
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-
+    const handleSubmit = () => {
         if (!validate()) {
             return;
         }
@@ -80,7 +78,6 @@ export const AddItemDialog = ({
         <Dialog
             title="Produkt hinzufügen"
             onClose={handleClose}
-            onSubmit={handleSubmit}
             buttons={
                 <Button
                     disabled={
@@ -90,7 +87,7 @@ export const AddItemDialog = ({
                                 v.name.toLowerCase() === itemName.toLowerCase()
                         )
                     }
-                    type="submit"
+                    onClick={handleSubmit}
                 >
                     Hinzufügen
                 </Button>
