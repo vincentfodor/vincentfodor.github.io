@@ -93,7 +93,11 @@ export const AddRecipeDialog = ({
         <Dialog
             title="Rezept hinzufügen"
             onClose={handleClose}
-            buttons={<Button disabled={!validate()}>Hinzufügen</Button>}
+            buttons={
+                <Button disabled={!validate()} onClick={handleSubmit}>
+                    Hinzufügen
+                </Button>
+            }
             {...props}
         >
             <div className="space-y-2 mb-4">
