@@ -95,8 +95,9 @@ export const AddRecipeDialog = ({
         <Dialog
             title="Rezept hinzufügen"
             onClose={handleClose}
+            onSubmit={handleSubmit}
             buttons={
-                <Button disabled={!validate()} onClick={handleSubmit}>
+                <Button disabled={!validate()} type="submit">
                     Hinzufügen
                 </Button>
             }

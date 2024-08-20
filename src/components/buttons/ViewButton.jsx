@@ -1,19 +1,23 @@
 import classNames from "classnames";
 import { Button } from "../Button";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-export const ViewButton = ({ active, className, children, ...props }) => {
+export const ViewButton = ({ active, className, children, icon, ...props }) => {
     return (
         <Button
             className={classNames(
                 "!text-black justify-center transition-all",
                 {
-                    "bg-neutral-100": !active,
-                    "bg-neutral-200 font-semibold": active,
+                    "bg-transparent": !active,
+                    "bg-neutral-100 font-semibold": active,
                 },
                 className
             )}
             {...props}
         >
+            {!!icon && (
+                <FontAwesomeIcon icon={icon} size="sm" className="mr-2" />
+            )}
             {children}
         </Button>
     );

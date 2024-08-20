@@ -6,6 +6,8 @@ import { motivationalQuotes } from "../data/motivationalQuotes";
 import Marquee from "react-fast-marquee";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
+    faAppleAlt,
+    faBowlRice,
     faPenAlt,
     faPlus,
     faTrashAlt,
@@ -353,16 +355,18 @@ export const ShoppingList = ({
                     </div>
                 )}
             </div>
-            <div className="grid grid-cols-2 gap-2 p-2 rounded-lg bg-neutral-100 mb-2">
+            <div className="grid grid-cols-2 gap-1 rounded-lg mb-2">
                 <ViewButton
                     active={view === "products"}
                     onClick={() => setView("products")}
+                    icon={faAppleAlt}
                 >
                     Produkte
                 </ViewButton>
                 <ViewButton
                     active={view === "recipes"}
                     onClick={() => setView("recipes")}
+                    icon={faBowlRice}
                 >
                     Rezepte
                 </ViewButton>

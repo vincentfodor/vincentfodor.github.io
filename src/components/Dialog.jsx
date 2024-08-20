@@ -9,6 +9,7 @@ export const Dialog = ({
     onClose,
     title,
     buttons,
+    onSubmit,
     ...props
 }) => {
     if (!open) {
@@ -22,9 +23,10 @@ export const Dialog = ({
         >
             <div className="absolute w-full h-full bg-black/10" />
             <div className="absolute w-full h-full flex items-center justify-center p-4">
-                <div
+                <form
                     className="flex flex-col bg-white w-full rounded-lg max-h-full sm:w-96 drop-shadow-2xl"
                     onClick={(e) => e.stopPropagation()}
+                    onSubmit={onSubmit}
                 >
                     <div className="flex border-b p-4 text-lg font-bold items-center">
                         <h3 className="grow text-base">{title}</h3>
@@ -43,7 +45,7 @@ export const Dialog = ({
                     {!!buttons && (
                         <div className="p-4 text-right border-t">{buttons}</div>
                     )}
-                </div>
+                </form>
             </div>
         </div>
     );
