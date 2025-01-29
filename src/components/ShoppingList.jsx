@@ -1,24 +1,14 @@
 import classNames from "classnames";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "./Button";
-import { Textbox } from "./Textbox";
 import { motivationalQuotes } from "../data/motivationalQuotes";
 import Marquee from "react-fast-marquee";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-    faAppleAlt,
-    faBowlRice,
-    faPenAlt,
-    faPlus,
-    faTrashAlt,
-} from "@fortawesome/free-solid-svg-icons";
-import { Select } from "./Select";
-import { AddItemDialog } from "./dialogs/AddItemDialog";
+import { faAppleAlt, faBowlRice } from "@fortawesome/free-solid-svg-icons";
 import { UpdateItemDialog } from "./dialogs/UpdateItemDialog";
-import { ProgressBar } from "./ProgressBar";
 import { ItemPicker } from "./ItemPicker";
 import { ViewButton } from "./buttons/ViewButton";
 import { RecipePicker } from "./RecipePicker";
+import Siquijor from "./Siquijor";
 
 export const ShoppingList = ({
     className,
@@ -27,11 +17,15 @@ export const ShoppingList = ({
     isMuted,
     ...props
 }) => {
+    const itemsWrapperRef = useRef();
+
     const [items, setItems] = useState([]);
     const [savedItems, setSavedItems] = useState([]);
     const [motivation, setMotivation] = useState("");
     const [currentItem, setCurrentItem] = useState(null);
     const [view, setView] = useState("products");
+    const [explode, setExplode] = useState(false);
+    const [isAnimationRunning, setIsAnimationRunning] = useState(false);
 
     useEffect(() => {
         const itemList = localStorage.getItem(itemStorageName);
@@ -71,51 +65,6 @@ export const ShoppingList = ({
 
             return v;
         });
-
-        if (item.action !== "deleted") {
-            let motivation =
-                motivationalQuotes[
-                    Math.floor(Math.random() * motivationalQuotes.length)
-                ];
-
-            setMotivation(motivation);
-
-            if (!isMuted) {
-                if ("speechSynthesis" in window) {
-                    let synthesis = window.speechSynthesis;
-
-                    let voice = synthesis.getVoices().find(function (voice) {
-                        return voice.voiceURI === "Google Deutsch";
-                    });
-
-                    if (!voice) {
-                        voice = synthesis.getVoices().find(function (voice) {
-                            return (
-                                voice.voiceURI ===
-                                "Microsoft Stefan - German (Germany)"
-                            );
-                        });
-                    }
-
-                    if (!voice) {
-                        voice = synthesis.getVoices().find(function (voice) {
-                            return voice.lang === "de-DE";
-                        });
-                    }
-
-                    let utterance = new SpeechSynthesisUtterance(motivation);
-
-                    utterance.voice = voice;
-                    utterance.pitch = 0.2;
-                    utterance.rate = 0.9;
-                    utterance.volume = 1;
-
-                    synthesis.speak(utterance);
-                } else {
-                    console.error("Text-to-speech not supported.");
-                }
-            }
-        }
 
         setItems(newItems);
         save(itemStorageName, newItems);
@@ -289,6 +238,76 @@ export const ShoppingList = ({
             </div>
         ));
 
+    const handleFinish = () => {
+        if (!itemsWrapperRef.current) {
+            return;
+        }
+
+        let motivation =
+            motivationalQuotes[
+                Math.floor(Math.random() * motivationalQuotes.length)
+            ];
+
+        setMotivation(motivation);
+
+        if (!isMuted) {
+            if ("speechSynthesis" in window) {
+                let synthesis = window.speechSynthesis;
+
+                let voice = synthesis.getVoices().find(function (voice) {
+                    return voice.voiceURI === "Google Deutsch";
+                });
+
+                if (!voice) {
+                    voice = synthesis.getVoices().find(function (voice) {
+                        return (
+                            voice.voiceURI ===
+                            "Microsoft Stefan - German (Germany)"
+                        );
+                    });
+                }
+
+                if (!voice) {
+                    voice = synthesis.getVoices().find(function (voice) {
+                        return voice.lang === "de-DE";
+                    });
+                }
+
+                let utterance = new SpeechSynthesisUtterance(motivation);
+
+                utterance.voice = voice;
+                utterance.pitch = 0.2;
+                utterance.rate = 0.9;
+                utterance.volume = 1;
+
+                synthesis.speak(utterance);
+            } else {
+                console.error("Text-to-speech not supported.");
+            }
+        }
+
+        setIsAnimationRunning(true);
+
+        itemsWrapperRef.current.style.transition =
+            "all 700ms cubic-bezier(0,.75,.75,1)";
+        itemsWrapperRef.current.style.transform = "scale(0)";
+
+        setTimeout(() => {
+            setExplode(true);
+
+            setTimeout(() => {
+                setItems(items.filter((v) => v.action !== "deleted"));
+
+                itemsWrapperRef.current.style.transform = "scale(1)";
+
+                setExplode(false);
+                setIsAnimationRunning(false);
+            }, 700);
+        }, 900);
+
+        setTimeout(() => {}, 1200);
+    };
+
     const renderItemGroups = Object.keys(itemGroups)
         .sort()
         .map((key) => {
@@ -332,11 +351,20 @@ export const ShoppingList = ({
                         {motivation}
                     </Marquee>
                 )}
-                {items.length > 0 && (
-                    <div className="grid grid-cols-1 gap-4">
-                        {renderItemGroups}
+                <div className="relative">
+                    <div ref={itemsWrapperRef}>
+                        {items.length > 0 && (
+                            <div className="grid grid-cols-1 gap-4 transition-all">
+                                {renderItemGroups}
+                            </div>
+                        )}
                     </div>
-                )}
+                    {explode && (
+                        <div className="absolute w-full h-full flex items-center justify-center top-0 left-0">
+                            <Siquijor size="200" color="black" />
+                        </div>
+                    )}
+                </div>
                 {total > 0 && (
                     <div className="text-right p-2 border-b">
                         <span className="font-bold">
@@ -354,6 +382,15 @@ export const ShoppingList = ({
                         </span>
                     </div>
                 )}
+                {items.find((v) => v.action === "deleted") &&
+                    !isAnimationRunning && (
+                        <Button
+                            className="w-full justify-center p-4 mt-4"
+                            onClick={handleFinish}
+                        >
+                            Fertig!
+                        </Button>
+                    )}
             </div>
             <div className="grid grid-cols-2 gap-1 rounded-lg mb-2">
                 <ViewButton
