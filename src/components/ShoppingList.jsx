@@ -280,7 +280,7 @@ export const ShoppingList = ({
                 });
 
                 if (!voice) {
-                    voice = synthesis.getVoices().find(function (voice) {
+                    voice = voices.find(function (voice) {
                         return (
                             voice.voiceURI ===
                             "Microsoft Stefan - German (Germany)"
@@ -289,9 +289,13 @@ export const ShoppingList = ({
                 }
 
                 if (!voice) {
-                    voice = synthesis.getVoices().find(function (voice) {
+                    voice = voices.find(function (voice) {
                         return voice.lang === "de-DE";
                     });
+                }
+
+                if (!voice) {
+                    voice = voices[0];
                 }
 
                 let utterance = new SpeechSynthesisUtterance(motivation);
