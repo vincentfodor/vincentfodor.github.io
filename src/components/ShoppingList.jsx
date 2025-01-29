@@ -380,7 +380,7 @@ export const ShoppingList = ({
                         {motivation}
                     </Marquee>
                 )}
-                <div className="relative">
+                <div className="relative overflow-hidden">
                     <div ref={itemsWrapperRef}>
                         {items.length > 0 && (
                             <div className="grid grid-cols-1 gap-4 transition-all">
@@ -391,7 +391,7 @@ export const ShoppingList = ({
                     {explode && (
                         <div className="absolute w-full h-full flex items-center justify-center top-0 left-0 pointer-events-none">
                             <div className="relative">
-                                <Siquijor size="200" color="black" />
+                                <Siquijor size="300" color="black" />
                                 {/* <div className="absolute -left-4 -top-2">
                                     <Bohol
                                         size="50"
@@ -441,16 +441,18 @@ export const ShoppingList = ({
                         </span>
                     </div>
                 )}
-                {items.find((v) => v.action === "deleted") &&
-                    !isAnimationRunning && (
+            </div>
+            {items.find((v) => v.action === "deleted") &&
+                !isAnimationRunning && (
+                    <div className="fixed bottom-0 left-0 p-4 w-full">
                         <Button
-                            className="w-full justify-center p-4 mt-4"
+                            className="w-full justify-center p-4 font-bold"
                             onClick={handleFinish}
                         >
                             Fertig!
                         </Button>
-                    )}
-            </div>
+                    </div>
+                )}
             <div className="grid grid-cols-2 gap-1 rounded-lg mb-2">
                 <ViewButton
                     active={view === "products"}
