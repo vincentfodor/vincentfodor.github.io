@@ -46,8 +46,6 @@ export default function Siquijor({
             delay: prevDelay,
         });
 
-        console.log({ TIME_LINE });
-
         for (let i = 0; i < 2; i++) {
             const angle = Math.PI / (COUNTS[i] / 2);
 

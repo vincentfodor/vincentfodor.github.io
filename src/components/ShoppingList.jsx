@@ -26,6 +26,7 @@ export const ShoppingList = ({
     const [view, setView] = useState("products");
     const [explode, setExplode] = useState(false);
     const [isAnimationRunning, setIsAnimationRunning] = useState(false);
+    const [voices, setVoices] = useState([]);
 
     useEffect(() => {
         const itemList = localStorage.getItem(itemStorageName);
@@ -53,6 +54,24 @@ export const ShoppingList = ({
             }
         }
     }, []);
+
+    useEffect(() => {
+        if (voices.length > 0) {
+            return;
+        }
+
+        let voiceFetchInterval = setInterval(() => {
+            const fetchVoices = async () => {
+                let synthesis = window.speechSynthesis;
+
+                setVoices(synthesis.getVoices());
+            };
+
+            fetchVoices();
+        }, 500);
+
+        return () => clearInterval(voiceFetchInterval);
+    }, [voices]);
 
     const handleItemCheck = (item) => {
         const newItems = items.map((v) => {
@@ -238,7 +257,9 @@ export const ShoppingList = ({
             </div>
         ));
 
-    const handleFinish = () => {
+    console.log({ voices });
+
+    const handleFinish = async () => {
         if (!itemsWrapperRef.current) {
             return;
         }
@@ -254,7 +275,7 @@ export const ShoppingList = ({
             if ("speechSynthesis" in window) {
                 let synthesis = window.speechSynthesis;
 
-                let voice = synthesis.getVoices().find(function (voice) {
+                let voice = (voices || []).find(function (voice) {
                     return voice.voiceURI === "Google Deutsch";
                 });
 
@@ -295,6 +316,8 @@ export const ShoppingList = ({
 
         setTimeout(() => {
             setExplode(true);
+
+            itemsWrapperRef.current.style.transform = "scale(0) rotate(0)";
 
             setTimeout(() => {
                 setItems(items.filter((v) => v.action !== "deleted"));
