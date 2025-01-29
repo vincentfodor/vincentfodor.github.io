@@ -8,7 +8,7 @@ import { UpdateItemDialog } from "./dialogs/UpdateItemDialog";
 import { ItemPicker } from "./ItemPicker";
 import { ViewButton } from "./buttons/ViewButton";
 import { RecipePicker } from "./RecipePicker";
-import Siquijor from "./Siquijor";
+import Siquijor from "./animations/Siquijor";
 
 export const ShoppingList = ({
     className,
@@ -289,8 +289,9 @@ export const ShoppingList = ({
         setIsAnimationRunning(true);
 
         itemsWrapperRef.current.style.transition =
-            "all 700ms cubic-bezier(0,.75,.75,1)";
-        itemsWrapperRef.current.style.transform = "scale(0)";
+            "all 1000ms cubic-bezier(.3,-0.45,.05,1)";
+        itemsWrapperRef.current.style.transform = "scale(0) rotate(420deg)";
+        itemsWrapperRef.current.style.opacity = "0";
 
         setTimeout(() => {
             setExplode(true);
@@ -298,12 +299,13 @@ export const ShoppingList = ({
             setTimeout(() => {
                 setItems(items.filter((v) => v.action !== "deleted"));
 
-                itemsWrapperRef.current.style.transform = "scale(1)";
+                itemsWrapperRef.current.style.transform = "scale(1) rotate(0)";
+                itemsWrapperRef.current.style.opacity = "1";
 
                 setExplode(false);
                 setIsAnimationRunning(false);
-            }, 700);
-        }, 900);
+            }, 2000);
+        }, 1100);
 
         setTimeout(() => {}, 1200);
     };
@@ -360,8 +362,38 @@ export const ShoppingList = ({
                         )}
                     </div>
                     {explode && (
-                        <div className="absolute w-full h-full flex items-center justify-center top-0 left-0">
-                            <Siquijor size="200" color="black" />
+                        <div className="absolute w-full h-full flex items-center justify-center top-0 left-0 pointer-events-none">
+                            <div className="relative">
+                                <Siquijor size="200" color="black" />
+                                {/* <div className="absolute -left-4 -top-2">
+                                    <Bohol
+                                        size="50"
+                                        color="black"
+                                        delay={1.23}
+                                    />
+                                </div>
+                                <div className="absolute -left-4 -bottom-2">
+                                    <Boracay
+                                        size="50"
+                                        color="black"
+                                        delay={1.27}
+                                    />
+                                </div>
+                                <div className="absolute -right-5 -top-2">
+                                    <Bohol
+                                        size="70"
+                                        color="black"
+                                        delay={1.25}
+                                    />
+                                </div>
+                                <div className="absolute -right-5 -bottom-2">
+                                    <Bohol
+                                        size="50"
+                                        color="black"
+                                        delay={1.2}
+                                    />
+                                </div> */}
+                            </div>
                         </div>
                     )}
                 </div>
