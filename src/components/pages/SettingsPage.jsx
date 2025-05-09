@@ -94,27 +94,42 @@ export const SettingsPage = () => {
             <div className="mb-4">
                 <NavLink to="/">Zurück</NavLink>
             </div>
-            <div className="mb-8">
-                <h3 className="font-bold mb-1">Daten</h3>
+            <div className="space-y-4 mb-8">
+                <div>
+                    <h3 className="font-bold mb-1">Daten</h3>
+                    <p>
+                        Deine Daten werden nur auf deinem Telefon gespeichert,
+                        du kannst sie entweder <b>importieren</b> oder{" "}
+                        <b>exportieren</b>, um deine Daten zu sichern
+                    </p>
+                </div>
                 <div className="grid grid-cols-2 gap-2">
                     <Button icon={faFileExport} onClick={handleExport}>
                         Exportieren
                     </Button>
-                    <Button icon={faFileImport} onClick={handleImport}>
+                    <Button
+                        icon={faFileImport}
+                        onClick={handleImport}
+                        variant="secondary"
+                    >
                         Importieren
                     </Button>
                 </div>
+                <div>
+                    <h3 className="font-semibold">Speicherplatz verfügbar</h3>
+                    <ProgressBar
+                        value={localStorageSizeInMB}
+                        min={0}
+                        max={10}
+                        leftLabel={`${localStorageSizeInMB.toFixed(2)} mb`}
+                        rightLabel={"10 mb"}
+                    />
+                </div>
             </div>
-            <div>
-                <h3 className="font-semibold">Speicherplatz verfügbar</h3>
-                <ProgressBar
-                    value={localStorageSizeInMB}
-                    min={0}
-                    max={10}
-                    leftLabel={`${localStorageSizeInMB.toFixed(2)} mb`}
-                    rightLabel={"10 mb"}
-                />
-            </div>
+            <p className="text-right text-xs">
+                OpenSource 2025 ⦾ Vincent and{" "}
+                <span className="text-primary">family</span> ❤️
+            </p>
             <input
                 accept="application/json"
                 type="file"

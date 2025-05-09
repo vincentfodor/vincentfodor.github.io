@@ -76,7 +76,7 @@ export const ItemPicker = ({
                     }}
                 >
                     <div className="grow" />
-                    <div className="flex flex-col py-2 font-semibold pr-2">
+                    <div className="flex flex-col py-2 font-semibold pr-2 select-none">
                         {item.name}
                     </div>
                 </div>
